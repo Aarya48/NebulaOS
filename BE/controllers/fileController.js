@@ -82,7 +82,133 @@ res.status(500).json({
     
 
 }
+const getFolderContent = async (req, res) => {
+  const { folderId } = req.params;
+
+  try {
+    const files = await File.find({
+      owner: req.user.id,
+      parentFolder: folderId,
+    });
+
+    res.status(200).json({
+      success: true,
+      count: files.length,
+      files,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+const rename=async (req,res)=>{
+  const {id}=req.params;
+  const {name}=req.body;
+  try{
+const file=await File.findById(id);
+if(!file){
+  return res.status(404).json({
+    success:false,
+    message:"file not found",
+  })
+}
+if(!name){
+  return res.status(400).json({
+    success:false,
+    message:"Name is required",
+  })
+}
+if(file.owner.toString()!=req.user.id){
+  return res.status(403).json({
+    success:false,
+    message:"Unauthorized",
+  });
+  
+}
+file.name=name;
+  await file.save();
+  res.status(200).json({
+    success:true,
+    message:"File renamed successfully",
+    file,
+  })
+  }
+  catch(error){
+res.status(500).json({
+    success:false,
+    message:error.message,
+})
+  }
+}
+
+
+
+const deleteFolderRecursively = async (folderId) => {
+  const children = await File.find({
+    parentFolder: folderId,
+  });
+
+  for (const child of children) {
+    if (child.type === "folder") {
+      await deleteFolderRecursively(child._id);
+    }
+
+    await child.deleteOne();
+  }
+};
+
+const deleteItem = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const file = await File.findById(id);
+
+    if (!file) {
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+      });
+    }
+
+    if (file.owner.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    // If folder, delete all nested files/folders
+    if (file.type === "folder") {
+      await deleteFolderRecursively(file._id);
+    }
+
+    await file.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Item deleted successfully",
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
-  createFolder,getFiles,createFile
+  createFolder,
+  createFile,
+  getFiles,
+  getFolderContent,
+  rename,
+  deleteItem,
+};
+
+module.exports = {
+  createFolder,getFiles,createFile,getFolderContent,rename,deleteItem
 };

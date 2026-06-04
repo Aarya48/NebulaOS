@@ -679,7 +679,245 @@ Or without content:
 
 ---
 
-### 5. Get All Files and Folders
+### 5. Rename File or Folder
+
+**Method:** `PUT`
+
+**Route:**
+```http
+PUT /api/files/:id
+```
+
+**Description:**
+Renames an existing file or folder owned by the authenticated user. The endpoint verifies ownership and updates the item name.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Parameters:**
+- `id` (path parameter): The ID of the file or folder to rename.
+
+**Query Parameters:** None
+
+**Request Body Schema:**
+
+```json
+{
+  "name": "new-name.txt"
+}
+```
+
+**Field Descriptions:**
+
+| Field | Type | Required | Validation | Purpose |
+| ----- | ---- | -------- | ---------- | ------- |
+| `name` | String | Yes | Non-empty string | New name for the file or folder |
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "message": "File renamed successfully",
+  "file": {
+    "_id": "507f1f77bcf86cd799439013",
+    "owner": "507f1f77bcf86cd799439012",
+    "name": "new-name.txt",
+    "type": "file",
+    "content": "This is file content",
+    "parentFolder": null,
+    "createdAt": "2024-06-05T10:35:00.000Z",
+    "updatedAt": "2024-06-05T10:40:00.000Z",
+    "__v": 0
+  }
+}
+```
+
+**Response Field Descriptions:**
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `success` | Boolean | Indicates successful rename |
+| `message` | String | Confirmation message |
+| `file` | Object | Updated file or folder document |
+
+**Status Code:** `200 OK`
+
+**Error Responses:**
+
+### Error 1: Item Not Found
+
+**Status Code:** `404 Not Found`
+
+```json
+{
+  "success": false,
+  "message": "file not found"
+}
+```
+
+**When it occurs:** If the provided `id` does not match any file or folder.
+
+### Error 2: Missing Name
+
+**Status Code:** `400 Bad Request`
+
+```json
+{
+  "success": false,
+  "message": "Name is required"
+}
+```
+
+**When it occurs:** If the request body does not include `name`.
+
+### Error 3: Unauthorized
+
+**Status Code:** `403 Forbidden`
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized"
+}
+```
+
+**When it occurs:** If the authenticated user does not own the target file or folder.
+
+### Error 4: Invalid Token
+
+**Status Code:** `401 Unauthorized`
+
+```json
+{
+  "success": false,
+  "message": "Invalid token"
+}
+```
+
+**When it occurs:** If the JWT token is invalid or expired.
+
+### Error 5: Server Error
+
+**Status Code:** `500 Internal Server Error`
+
+```json
+{
+  "success": false,
+  "message": "<error details>"
+}
+```
+
+**When it occurs:** Database issues or validation errors.
+
+---
+
+### 6. Delete File or Folder
+
+**Method:** `DELETE`
+
+**Route:**
+```http
+DELETE /api/files/:id
+```
+
+**Description:**
+Deletes a file or folder owned by the authenticated user. If the target item is a folder, all nested files and subfolders are deleted recursively.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Parameters:**
+- `id` (path parameter): The ID of the file or folder to delete.
+
+**Query Parameters:** None
+
+**Request Body:** None
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "message": "Item deleted successfully"
+}
+```
+
+**Response Field Descriptions:**
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| `success` | Boolean | Indicates successful deletion |
+| `message` | String | Confirmation message |
+
+**Status Code:** `200 OK`
+
+**Error Responses:**
+
+### Error 1: Item Not Found
+
+**Status Code:** `404 Not Found`
+
+```json
+{
+  "success": false,
+  "message": "File not found"
+}
+```
+
+**When it occurs:** If the provided `id` does not match any file or folder.
+
+### Error 2: Unauthorized
+
+**Status Code:** `403 Forbidden`
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized"
+}
+```
+
+**When it occurs:** If the authenticated user does not own the target file or folder.
+
+### Error 3: Invalid Token
+
+**Status Code:** `401 Unauthorized`
+
+```json
+{
+  "success": false,
+  "message": "Invalid token"
+}
+```
+
+**When it occurs:** If the JWT token is invalid or expired.
+
+### Error 4: Server Error
+
+**Status Code:** `500 Internal Server Error`
+
+```json
+{
+  "success": false,
+  "message": "<error details>"
+}
+```
+
+**When it occurs:** Database issues or validation errors.
+
+---
+
+### 7. Get All Files and Folders
 
 **Method:** `GET`
 

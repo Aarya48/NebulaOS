@@ -1,0 +1,15 @@
+<div style={{ width: '1080px', height: '1080px', position: 'relative' }}>
+  <Galaxy
+    starSpeed={0.2}
+    density={3}
+    hueShift={140}
+    speed={0.4}
+    glowIntensity={0.35}
+    saturation={0.2}
+    mouseRepulsion
+    repulsionStrength={0.5}
+    twinkleIntensity={0.4}
+    rotationSpeed={0.05}
+    transparent
+  />
+</div>

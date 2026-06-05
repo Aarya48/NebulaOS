@@ -199,7 +199,62 @@ const deleteItem = async (req, res) => {
     });
   }
 };
+const moveItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { parentFolder } = req.body;
+if (parentFolder) {
+   const destinationFolder = await File.findById(parentFolder);
 
+   if (!destinationFolder) {
+      return res.status(404).json({
+         success: false,
+         message: "Destination folder not found"
+      });
+   }
+
+   if (destinationFolder.type !== "folder") {
+      return res.status(400).json({
+         success: false,
+         message: "Destination must be a folder"
+      });
+   }
+}
+
+    const file = await File.findById(id);
+
+    if (!file) {
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+      });
+    }
+
+    if (file.owner.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    
+    file.parentFolder = parentFolder || null;
+
+    await file.save();
+
+    res.status(200).json({
+      success: true,
+      message: "File moved successfully",
+      file,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   createFolder,
   createFile,
@@ -207,8 +262,6 @@ module.exports = {
   getFolderContent,
   rename,
   deleteItem,
+  moveItem,
 };
 
-module.exports = {
-  createFolder,getFiles,createFile,getFolderContent,rename,deleteItem
-};

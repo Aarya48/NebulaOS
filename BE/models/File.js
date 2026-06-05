@@ -29,8 +29,21 @@ const fileSchema = new mongoose.Schema(
       ref: "File",
       default: null,
     },
+    isFavorite: {
+      type: Boolean,
+      default: false,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+     lastOpened:{
+      type: Date,
+      default: null,
+
+    },
   },
-  {
+      {
     timestamps: true,
   }
 );

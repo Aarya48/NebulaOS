@@ -1030,6 +1030,389 @@ Authorization: Bearer <JWT_TOKEN>
 
 ---
 
+### 8. Get Folder Content
+
+**Method:** `GET`
+
+**Route:**
+```http
+GET /api/files/folder/:folderId
+```
+
+**Description:**
+Retrieves all files and folders inside a specific folder for the authenticated user.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Parameters:**
+- `folderId` (path parameter): The ID of the parent folder.
+
+**Query Parameters:** None
+
+**Request Body:** None
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "count": 2,
+  "files": [
+    {
+      "_id": "507f1f77bcf86cd799439014",
+      "owner": "507f1f77bcf86cd799439012",
+      "name": "Q1 Reports",
+      "type": "folder",
+      "content": "",
+      "parentFolder": "507f1f77bcf86cd799439011",
+      "createdAt": "2024-06-05T10:31:00.000Z",
+      "updatedAt": "2024-06-05T10:31:00.000Z"
+    }
+  ]
+}
+```
+
+**Status Code:** `200 OK`
+
+**Error Responses:**
+
+### Error 1: Invalid Folder ID
+
+**Status Code:** `404 Not Found`
+
+```json
+{
+  "success": false,
+  "message": "File not found"
+}
+```
+
+**When it occurs:** Folder with the provided `folderId` does not exist.
+
+### Error 2: Invalid Token
+
+**Status Code:** `401 Unauthorized`
+
+```json
+{
+  "success": false,
+  "message": "Invalid token"
+}
+```
+
+**When it occurs:** If the JWT token is invalid or expired.
+
+---
+
+### 9. Move File or Folder
+
+**Method:** `PUT`
+
+**Route:**
+```http
+PUT /api/files/move/:id
+```
+
+**Description:**
+Moves a file or folder into a different parent folder, or to the root if `parentFolder` is null.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Parameters:**
+- `id` (path parameter): The ID of the file or folder to move.
+
+**Request Body Schema:**
+
+```json
+{
+  "parentFolder": "507f1f77bcf86cd799439011"
+}
+```
+
+**Field Descriptions:**
+
+| Field | Type | Required | Validation | Purpose |
+| ----- | ---- | -------- | ---------- | ------- |
+| `parentFolder` | ObjectId or null | No | Valid MongoDB ObjectId | Destination folder ID; null moves item to root |
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "message": "File moved successfully",
+  "file": {
+    "_id": "507f1f77bcf86cd799439013",
+    "owner": "507f1f77bcf86cd799439012",
+    "name": "document.txt",
+    "type": "file",
+    "content": "This is file content",
+    "parentFolder": "507f1f77bcf86cd799439011",
+    "createdAt": "2024-06-05T10:35:00.000Z",
+    "updatedAt": "2024-06-05T10:40:00.000Z"
+  }
+}
+```
+
+**Status Code:** `200 OK`
+
+**Error Responses:**
+
+### Error 1: Destination Folder Not Found
+
+**Status Code:** `404 Not Found`
+
+```json
+{
+  "success": false,
+  "message": "Destination folder not found"
+}
+```
+
+### Error 2: Destination Must Be Folder
+
+**Status Code:** `400 Bad Request`
+
+```json
+{
+  "success": false,
+  "message": "Destination must be a folder"
+}
+```
+
+---
+
+### 10. Search Files and Folders
+
+**Method:** `GET`
+
+**Route:**
+```http
+GET /api/files/search?q=<search-term>
+```
+
+**Description:**
+Searches the authenticated user's files and folders by name.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Query Parameters:**
+- `q`: Search string to match against file and folder names.
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "count": 1,
+  "files": [
+    {
+      "_id": "507f1f77bcf86cd799439013",
+      "name": "document.txt",
+      "type": "file",
+      "parentFolder": null
+    }
+  ]
+}
+```
+
+**Status Code:** `200 OK`
+
+**Error Responses:**
+
+### Error 1: Search Query Required
+
+**Status Code:** `400 Bad Request`
+
+```json
+{
+  "success": false,
+  "message": "Search query is required"
+}
+```
+
+---
+
+### 11. Toggle Favorite
+
+**Method:** `PUT`
+
+**Route:**
+```http
+PUT /api/files/favorite/:id
+```
+
+**Description:**
+Marks a file or folder as favorite, or removes it from favorites if already favorited.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Parameters:**
+- `id` (path parameter): The ID of the file or folder to toggle favorite status.
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "message": "File marked as favorite",
+  "file": { ... }
+}
+```
+
+**Status Code:** `200 OK`
+
+**Error Responses:**
+
+### Error 1: Item Not Found
+
+**Status Code:** `404 Not Found`
+
+```json
+{
+  "success": false,
+  "message": "file not found"
+}
+```
+
+---
+
+### 12. Get Favorites
+
+**Method:** `GET`
+
+**Route:**
+```http
+GET /api/files/favorite
+```
+
+**Description:**
+Retrieves all favorite files and folders for the authenticated user.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "files": [
+    {
+      "_id": "507f1f77bcf86cd799439013",
+      "name": "document.txt",
+      "type": "file",
+      "isFavorite": true
+    }
+  ]
+}
+```
+
+**Status Code:** `200 OK`
+
+---
+
+### 13. Open File
+
+**Method:** `PUT`
+
+**Route:**
+```http
+PUT /api/files/open/:id
+```
+
+**Description:**
+Marks a file as opened and updates its `lastOpened` timestamp.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Parameters:**
+- `id` (path parameter): The ID of the file to open.
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "message": "File opened successfully",
+  "file": { ... }
+}
+```
+
+**Status Code:** `200 OK`
+
+---
+
+### 14. Get Recent Files
+
+**Method:** `GET`
+
+**Route:**
+```http
+GET /api/files/recent
+```
+
+**Description:**
+Retrieves the most recently opened files for the authenticated user.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "count": 3,
+  "files": [
+    {
+      "_id": "507f1f77bcf86cd799439013",
+      "name": "document.txt",
+      "type": "file",
+      "lastOpened": "2024-06-05T10:40:00.000Z"
+    }
+  ]
+}
+```
+
+**Status Code:** `200 OK`
+
+---
+
 ## Database Models
 
 ### User Model
@@ -1104,6 +1487,9 @@ Authorization: Bearer <JWT_TOKEN>
   type: String (enum: ["file", "folder"], required),
   content: String (default: ""),
   parentFolder: ObjectId (ref: File, nullable),
+  isFavorite: Boolean (default: false),
+  isDeleted: Boolean (default: false),
+  lastOpened: Date (nullable),
   createdAt: DateTime (auto),
   updatedAt: DateTime (auto)
 }
@@ -1119,6 +1505,9 @@ Authorization: Bearer <JWT_TOKEN>
 | `type` | String | Yes | - | "file" or "folder" | Enum validation | Distinguishes file from folder |
 | `content` | String | No | - | Any text | Max 10MB | File content/body; empty for folders |
 | `parentFolder` | ObjectId | No | File._id | Valid file ID or null | Nullable | Parent folder for nesting; null for root |
+| `isFavorite` | Boolean | No | - | - | Default false | Marks item as favorite |
+| `isDeleted` | Boolean | No | - | - | Default false | Soft-delete flag (reserved) |
+| `lastOpened` | Date | No | - | - | Nullable | Timestamp of last file open action |
 | `createdAt` | DateTime | Yes | - | Auto-generated | UTC timezone | Creation timestamp |
 | `updatedAt` | DateTime | Yes | - | Auto-generated | UTC timezone | Last modification timestamp |
 

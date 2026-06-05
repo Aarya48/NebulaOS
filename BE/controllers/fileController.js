@@ -255,6 +255,144 @@ if (parentFolder) {
     });
   }
 };
+const searchFiles=async (req,res)=>{
+  const {q} =req.query;
+  
+  try{
+if(!q){
+  return res.status(400).json({
+    success:false,
+    message:"Search query is required",
+  })
+}
+const files=await File.find({
+  owner:req.user.id,
+
+  name:{
+    $regex:q,
+    $options:"i",
+  }
+})
+
+res.status(200).json({
+  success:true,
+  count:files.length,
+  files,
+})
+
+  }
+  catch(err){
+    res.status(500).json({
+      success:false,
+      message:err.message,
+    })
+  }
+}
+const changeFavorite=async (req,res)=>{
+  const {id}=req.params;
+  try{
+const file=await File.findById(id);
+if(!file){
+  return res.status(404).json({
+    success:false,
+    message:"file not found",
+  })
+}
+if(file.owner.toString()!=req.user.id){
+  return res.status(403).json({
+    success:false,
+    message:"Unauthorized",     
+  })
+}
+file.isFavorite=!file.isFavorite;
+await file.save();
+res.status(200).json({
+  success:true,
+  message:file.isFavorite?"File marked as favorite":"File removed from favorites",
+  file,
+})
+  }
+  catch(error){
+    res.status(500).json({
+      success:false,
+      message:error.message,
+    })
+  }
+}
+const getFavorites=async (req,res)=>{
+
+  try{
+    const files=await File.find({
+      owner:req.user.id,
+      isFavorite:true,
+    })
+res.status(200).json({
+      success:true,
+      files,
+    })
+  }
+  catch(err){
+res.status(500).json({
+  success:false,
+  count:files.length,
+  message:err.message,
+})
+  }
+}
+const openFile=async (req,res)=>{
+  const {id}=req.params;
+  try{
+    const file=await File.findById(id);
+    if(!file){
+      return res.status(404).json({
+        success:false,
+        message:"File not found",
+      })
+if (file.owner.toString() !== req.user.id) {
+  return res.status(403).json({
+    success: false,
+    message: "Unauthorized",
+  });
+}
+    }
+    file.lastOpened=new Date();
+    await file.save();
+    res.status(200).json({
+      success:true,
+      message:"File opened successfully",
+      file,
+    })
+  }
+  catch(err){
+    res.status(500).json({
+      success:false,
+      message:err.message,
+    })
+  }
+}
+const getRecentFiles = async (req, res) => {
+  try {
+    const files = await File.find({
+      owner: req.user.id,
+      lastOpened: { $ne: null }
+    })
+    .sort({ lastOpened: -1 })
+    .limit(10);
+
+    res.status(200).json({
+      success: true,
+      count: files.length,
+      files,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   createFolder,
   createFile,
@@ -263,5 +401,10 @@ module.exports = {
   rename,
   deleteItem,
   moveItem,
+  searchFiles,
+  changeFavorite,
+  getFavorites,
+  getRecentFiles,
+  openFile,
 };
 

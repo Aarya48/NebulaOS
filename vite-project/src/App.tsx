@@ -1,14 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import GalaxyPage from './pages/galaxy';
+import { CursorProvider, Cursor, CursorFollow } from '@/components/animate-ui/components/animate/cursor';
 import './App.css';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<GalaxyPage />} />
-      </Routes>
-    </Router>
+    <CursorProvider global>
+      <Cursor className="text-cyan-400 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)]" />
+      <CursorFollow className="bg-[#0a0514]/80 text-fuchsia-400 border border-fuchsia-500/30 backdrop-blur-md px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] shadow-[0_0_10px_rgba(217,70,239,0.2)]">
+        Designer
+      </CursorFollow>
+      <Router>
+        <Routes>
+          <Route path="/" element={<GalaxyPage />} />
+        </Routes>
+      </Router>
+    </CursorProvider>
   );
 }
 

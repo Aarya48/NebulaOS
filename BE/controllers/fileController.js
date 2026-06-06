@@ -32,10 +32,13 @@ const createFolder = async (req, res) => {
   }
 };
 
+
+
 const getFiles = async (req, res) => {
   try {
     const files = await File.find({
       owner: req.user.id,
+      isDeleted:false,
     });
 
     res.status(200).json({
@@ -51,6 +54,30 @@ const getFiles = async (req, res) => {
     });
   }
 };
+
+
+const getTrashFiles = async (req, res) => {
+  try {
+    const files = await File.find({
+      owner: req.user.id,
+      isDeleted: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      count: files.length,
+      files,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
 const createFile=async (req,res)=>{
     try{
         const {name,parentFolder,content}=req.body;
@@ -82,6 +109,47 @@ res.status(500).json({
     
 
 }
+
+
+const restoreFile = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const file = await File.findById(id);
+
+    if (!file) {
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+      });
+    }
+
+    if (file.owner.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    file.isDeleted = false;
+
+    await file.save();
+
+    res.status(200).json({
+      success: true,
+      message: "File restored successfully",
+      file,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
 const getFolderContent = async (req, res) => {
   const { folderId } = req.params;
 
@@ -89,6 +157,7 @@ const getFolderContent = async (req, res) => {
     const files = await File.find({
       owner: req.user.id,
       parentFolder: folderId,
+      isDeleted:false,
     });
 
     res.status(200).json({
@@ -104,6 +173,43 @@ const getFolderContent = async (req, res) => {
     });
   }
 };
+
+const permanentDelete = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const file = await File.findById(id);
+
+    if (!file) {
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+      });
+    }
+
+    if (file.owner.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    await file.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "File permanently deleted",
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
 const rename=async (req,res)=>{
   const {id}=req.params;
   const {name}=req.body;
@@ -156,8 +262,14 @@ const deleteFolderRecursively = async (folderId) => {
       await deleteFolderRecursively(child._id);
     }
 
-    await child.deleteOne();
+   child.isDeleted = true;
+await child.save();
+
   }
+  const folder = await File.findById(folderId);
+
+folder.isDeleted = true;
+await folder.save();
 };
 
 const deleteItem = async (req, res) => {
@@ -180,13 +292,13 @@ const deleteItem = async (req, res) => {
       });
     }
 
-    // If folder, delete all nested files/folders
+  
     if (file.type === "folder") {
       await deleteFolderRecursively(file._id);
     }
 
-    await file.deleteOne();
-
+  file.isDeleted=true;
+await file.save();
     res.status(200).json({
       success: true,
       message: "Item deleted successfully",
@@ -265,14 +377,14 @@ if(!q){
     message:"Search query is required",
   })
 }
-const files=await File.find({
-  owner:req.user.id,
-
-  name:{
-    $regex:q,
-    $options:"i",
+const files = await File.find({
+  owner: req.user.id,
+  isDeleted: false,
+  name: {
+    $regex: q,
+    $options: "i",
   }
-})
+});
 
 res.status(200).json({
   success:true,
@@ -288,6 +400,8 @@ res.status(200).json({
     })
   }
 }
+
+
 const changeFavorite=async (req,res)=>{
   const {id}=req.params;
   try{
@@ -319,12 +433,15 @@ res.status(200).json({
     })
   }
 }
+
+
 const getFavorites=async (req,res)=>{
 
   try{
     const files=await File.find({
       owner:req.user.id,
       isFavorite:true,
+      isDeleted:false,
     })
 res.status(200).json({
       success:true,
@@ -334,27 +451,30 @@ res.status(200).json({
   catch(err){
 res.status(500).json({
   success:false,
-  count:files.length,
+ 
   message:err.message,
 })
   }
 }
+
+
 const openFile=async (req,res)=>{
   const {id}=req.params;
   try{
     const file=await File.findById(id);
-    if(!file){
-      return res.status(404).json({
-        success:false,
-        message:"File not found",
-      })
+    if (!file) {
+  return res.status(404).json({
+    success: false,
+    message: "File not found",
+  });
+}
+
 if (file.owner.toString() !== req.user.id) {
   return res.status(403).json({
     success: false,
     message: "Unauthorized",
   });
 }
-    }
     file.lastOpened=new Date();
     await file.save();
     res.status(200).json({
@@ -370,10 +490,13 @@ if (file.owner.toString() !== req.user.id) {
     })
   }
 }
+
+
 const getRecentFiles = async (req, res) => {
   try {
     const files = await File.find({
       owner: req.user.id,
+      isDeleted:false,
       lastOpened: { $ne: null }
     })
     .sort({ lastOpened: -1 })
@@ -406,5 +529,9 @@ module.exports = {
   getFavorites,
   getRecentFiles,
   openFile,
+  getTrashFiles,
+restoreFile,
+permanentDelete,
+
 };
 

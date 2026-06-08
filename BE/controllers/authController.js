@@ -35,7 +35,7 @@ const jwt=require("jsonwebtoken");
       success: true,
       message: "User registered successfully",
     });
-
+console.log(req.body);
   } catch (error) {
     res.status(500).json({
       success: false,

@@ -10,7 +10,7 @@ const app = express();
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const initializeSocket= require ("./sockets/cursorSocket")
-
+const userRoutes = require("./routes/userRoutes");
 
 connectDB();
 
@@ -23,6 +23,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/files',  fileRoutes);
+app.use("/api/users", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 const io = new Server(server, {

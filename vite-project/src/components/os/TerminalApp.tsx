@@ -85,7 +85,7 @@ export function TerminalApp() {
            const target = args.slice(1).join(' ');
            if (!target) {
              newLines.push({ type: 'error', content: 'Usage: go <foldername> or go ..' });
-           } else if (target === '..') {
+           } else if (target === '..' || target === '../' || target === '..\\') {
              if (breadcrumbs.length > 1) {
                const newCrumbs = breadcrumbs.slice(0, -1);
                setBreadcrumbs(newCrumbs);

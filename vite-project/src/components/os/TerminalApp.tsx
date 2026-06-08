@@ -50,7 +50,11 @@ export function TerminalApp() {
       setInput(''); // clear early
 
       try {
-        if (mainCmd === 'help') {
+        if (cmd.toLowerCase() === 'tung tung tung sahur') {
+           const audio = new Audio('/Tung Tung Tung Sahur but in 4K (Original Meme).mp3');
+           audio.play();
+           newLines.push({ type: 'system', content: '♫ Playing easter egg audio...' });
+        } else if (mainCmd === 'help') {
            newLines.push(
              { type: 'output', content: 'NebulaOS Terminal Commands:' },
              { type: 'output', content: '  help                 : Show this detailed help message' },

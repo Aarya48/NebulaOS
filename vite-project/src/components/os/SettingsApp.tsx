@@ -317,28 +317,6 @@ export function SettingsApp() {
                  <Toggle label="" checked={preferences.showNetwork ?? true} onChange={(c) => updatePreference('showNetwork', c)} />
               </div>
             </section>
-
-            <section className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-2">
-              <h2 className="text-lg font-medium mb-4 flex items-center space-x-2">
-                <Search className="w-5 h-5 text-os-main" />
-                <span>Browser Defaults</span>
-              </h2>
-              <div className="flex items-center justify-between py-2">
-                <div>
-                  <div className="font-medium">Default Search Engine</div>
-                  <div className="text-xs text-gray-500 mt-1">Used for searches in the Nebula Browser.</div>
-                </div>
-                <select 
-                  value={preferences.searchEngine || 'google'}
-                  onChange={(e) => updatePreference('searchEngine', e.target.value as 'google' | 'duckduckgo' | 'bing')}
-                  className="bg-black/50 border border-white/10 rounded-md px-3 py-1.5 text-white outline-none focus:border-os-main"
-                >
-                  <option value="google">Google</option>
-                  <option value="duckduckgo">DuckDuckGo</option>
-                  <option value="bing">Bing</option>
-                </select>
-              </div>
-            </section>
           </div>
         )}
       </div>

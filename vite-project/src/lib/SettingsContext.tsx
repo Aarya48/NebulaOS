@@ -3,7 +3,6 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 export type OSPreferences = {
   taskbarAutoHide: boolean;
   desktopIconSize: 'small' | 'medium' | 'large';
-  searchEngine: 'google' | 'duckduckgo' | 'bing';
   windowGlassmorphism: boolean;
   backgroundDimming: number; // 0 to 80
   cursorGlow: number; // 0 to 100

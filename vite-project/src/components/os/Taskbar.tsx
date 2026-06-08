@@ -30,6 +30,10 @@ export function Taskbar({ windows, onWindowClick }: TaskbarProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Invisible hover trigger area for auto-hide */}
+      {preferences.taskbarAutoHide && (
+        <div className="absolute bottom-0 inset-x-0 h-4 pointer-events-auto" />
+      )}
       <motion.div 
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: (preferences.taskbarAutoHide && !isHovered) ? 100 : 0, opacity: 1 }}

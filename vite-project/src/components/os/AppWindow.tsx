@@ -40,7 +40,9 @@ export function AppWindow({
       style={{
         position: 'absolute',
         zIndex,
-        transition: 'top 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: preferences.reduceMotion 
+          ? 'none' 
+          : 'top 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         ...(isMaximized 
           ? { top: '4rem', left: 0, width: '100vw', height: 'calc(100vh - 4rem)' } 
           : { top: '15vh', left: 'calc(50vw - 400px)', width: 800, height: 500 }
@@ -71,7 +73,7 @@ export function AppWindow({
           isActive 
             ? "border-os-main/50 shadow-[0_0_40px_rgba(var(--os-main),0.2)]" 
             : "border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.5)]",
-          preferences.windowGlassmorphism ? "bg-[#05010A]/90 backdrop-blur-3xl" : "bg-[#05010A]"
+          (preferences.windowGlassmorphism ?? true) ? "bg-[#05010A]/90 backdrop-blur-3xl" : "bg-[#05010A]"
         )}
       >
       {/* Title Bar (Draggable Area) */}

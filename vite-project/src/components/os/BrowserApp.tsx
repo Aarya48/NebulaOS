@@ -8,10 +8,8 @@ import {
   Globe
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useSettings } from '@/lib/SettingsContext';
 
 export function BrowserApp() {
-  const { preferences } = useSettings();
   const DEFAULT_URL = 'https://www.google.com/webhp?igu=1';
   
   const [urlInput, setUrlInput] = useState(DEFAULT_URL);
@@ -38,12 +36,8 @@ export function BrowserApp() {
       return query;
     }
 
-    // Otherwise, treat as a search query via default search engine
-    switch (preferences.searchEngine) {
-      case 'duckduckgo': return `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
-      case 'bing': return `https://www.bing.com/search?q=${encodeURIComponent(query)}`;
-      default: return `https://www.google.com/search?igu=1&q=${encodeURIComponent(query)}`;
-    }
+    // Otherwise, treat as a search query via Google (using igu=1 to bypass iframe blocking)
+    return `https://www.google.com/search?igu=1&q=${encodeURIComponent(query)}`;
   };
 
   const navigateTo = (url: string) => {

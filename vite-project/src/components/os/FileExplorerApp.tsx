@@ -151,6 +151,11 @@ export function FileExplorerApp() {
   };
 
   const handleDelete = async (id: string) => {
+    const item = files.find(f => f._id === id);
+    if (item?.name === 'Desktop' && item?.parentFolder === null) {
+      alert("Cannot delete the system Desktop folder.");
+      return;
+    }
     if (!confirm('Are you sure you want to delete this item?')) return;
     try {
       const token = localStorage.getItem('nebula_token');
@@ -170,6 +175,12 @@ export function FileExplorerApp() {
   };
 
   const handleRename = async (id: string, currentName: string) => {
+    const item = files.find(f => f._id === id);
+    if (item?.name === 'Desktop' && item?.parentFolder === null) {
+      alert("Cannot rename the system Desktop folder.");
+      return;
+    }
+
     const name = prompt('Enter new name:', currentName);
     if (!name || name === currentName) return;
 

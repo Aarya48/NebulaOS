@@ -145,6 +145,8 @@ export function TerminalApp() {
              const item = files.find((f: any) => f.name.toLowerCase() === target.toLowerCase());
              if (!item) {
                newLines.push({ type: 'error', content: `'${target}' not found.` });
+             } else if (item.name === 'Desktop' && item.parentFolder === null) {
+               newLines.push({ type: 'error', content: 'Cannot delete the system Desktop folder.' });
              } else {
                const url = isPermanent 
                  ? `http://localhost:5000/api/files/permanent/${item._id}`

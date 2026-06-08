@@ -1,6 +1,8 @@
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { Terminal, FolderOpen, Eclipse, Code2, Globe, Settings } from 'lucide-react';
+import { useState } from 'react';
+import { useSettings } from '@/lib/SettingsContext';
 
 export interface TaskbarProps {
   windows: Array<{ id: string; type: string; title: string; isMinimized: boolean; isActive: boolean }>;
@@ -17,13 +19,21 @@ const WINDOW_TYPES = {
 };
 
 export function Taskbar({ windows, onWindowClick }: TaskbarProps) {
+  const { preferences } = useSettings();
+  const [isHovered, setIsHovered] = useState(false);
+
   if (windows.length === 0) return null;
 
   return (
-    <div className="absolute bottom-4 inset-x-0 flex justify-center z-50 pointer-events-none">
+    <div 
+      className="absolute bottom-0 inset-x-0 h-24 flex items-end justify-center z-50 pointer-events-none pb-4"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <motion.div 
         initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
+        animate={{ y: (preferences.taskbarAutoHide && !isHovered) ? 100 : 0, opacity: 1 }}
+        transition={preferences.reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 300, damping: 30 }}
         className="pointer-events-auto flex items-center space-x-2 bg-[#05010A]/80 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
       >
         {windows.map((win) => {

@@ -13,6 +13,7 @@ import {
   Star 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useSettings } from '@/lib/SettingsContext';
 
 export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string) => void }) {
   const [files, setFiles] = useState<FileItem[]>([]);
@@ -20,6 +21,10 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
   
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [contextMenu, setContextMenu] = useState<{ type: 'item' | 'empty', id?: string, x: number, y: number } | null>(null);
+
+  const { preferences } = useSettings();
+  const iconSizeClass = preferences.desktopIconSize === 'small' ? 'w-8 h-8' : preferences.desktopIconSize === 'large' ? 'w-16 h-16' : 'w-12 h-12';
+  const containerSizeClass = preferences.desktopIconSize === 'small' ? 'w-20' : preferences.desktopIconSize === 'large' ? 'w-32' : 'w-24';
 
   // Dialog State
   type DialogConfig = {
@@ -274,7 +279,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
                   exit={{ opacity: 0, scale: 0.8 }}
                   key={file._id}
                   className={cn(
-                    "flex flex-col items-center p-2 rounded-xl transition-colors w-24 cursor-pointer group pointer-events-auto",
+                    `flex flex-col items-center p-2 rounded-xl transition-colors cursor-pointer group pointer-events-auto ${containerSizeClass}`,
                     selectedIds.includes(file._id) ? "bg-os-main/20 ring-1 ring-os-main/50" : "hover:bg-white/10"
                   )}
                   onClick={(e) => handleItemClick(e, file._id)}
@@ -283,9 +288,9 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
                 >
                   <div className="relative mb-2 pointer-events-none">
                     {file.type === 'folder' ? (
-                      <Folder className="w-12 h-12 text-os-main drop-shadow-[0_0_10px_rgba(var(--os-main),0.5)]" fill="currentColor" fillOpacity={0.2} />
+                      <Folder className={cn(iconSizeClass, "text-os-main drop-shadow-[0_0_10px_rgba(var(--os-main),0.5)]")} fill="currentColor" fillOpacity={0.2} />
                     ) : (
-                      <FileIcon className={cn("w-12 h-12 transition-all", colorClass, glowClass)} />
+                      <FileIcon className={cn("transition-all", iconSizeClass, colorClass, glowClass)} />
                     )}
                     {file.isFavorite && (
                       <Star className="w-4 h-4 text-yellow-400 absolute -bottom-1 -right-1 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]" fill="currentColor" />

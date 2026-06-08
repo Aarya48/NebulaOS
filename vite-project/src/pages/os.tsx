@@ -27,7 +27,8 @@ import {
   LogOut,
   Eclipse,
   Code2,
-  Globe
+  Globe,
+  Wifi
 } from 'lucide-react';
 
 export default function OSPage() {
@@ -36,7 +37,7 @@ export default function OSPage() {
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState<{ level: number, charging: boolean } | null>(null);
   
-  const { wallpaper } = useSettings();
+  const { wallpaper, preferences } = useSettings();
 
   // Window Management State
   const [windows, setWindows] = useState<any[]>([]);
@@ -227,7 +228,7 @@ export default function OSPage() {
         <div className="flex items-center space-x-6">
           {/* Status Icons */}
           <div className="flex items-center space-x-4 text-gray-400">
-            {battery && (
+            {preferences.showBattery && battery && (
               <div className="flex items-center space-x-1 cursor-pointer hover:text-white transition-colors" title={`${Math.round(battery.level * 100)}%`}>
                 {battery.charging ? (
                   <BatteryCharging className="w-5 h-5 text-green-400" />
@@ -243,13 +244,14 @@ export default function OSPage() {
                 <span className="text-xs font-mono">{Math.round(battery.level * 100)}%</span>
               </div>
             )}
-            {!battery && <BatteryFull className="w-5 h-5 hover:text-white transition-colors cursor-pointer" />}
+            {preferences.showBattery && !battery && <BatteryFull className="w-5 h-5 hover:text-white transition-colors cursor-pointer" />}
+            {preferences.showNetwork && <Wifi className="w-4 h-4 hover:text-white transition-colors cursor-pointer" />}
             <Bell className="w-4 h-4 hover:text-white transition-colors cursor-pointer" />
           </div>
 
           {/* Clock */}
           <div className="flex items-center px-4 border-l border-white/10 text-sm font-mono text-gray-300 tracking-wider">
-            {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: !preferences.timeFormat24h })}
           </div>
 
           <Button 
@@ -285,8 +287,18 @@ export default function OSPage() {
       {/* Subtle geometric grid overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_30%,transparent_100%)] pointer-events-none z-0"></div>
 
+      {/* Background Dimming Overlay */}
+      {preferences.backgroundDimming > 0 && (
+        <div 
+          className="absolute inset-0 z-[1] pointer-events-none bg-black transition-opacity duration-300"
+          style={{ opacity: preferences.backgroundDimming / 100 }}
+        />
+      )}
+
       {/* Desktop Icons */}
-      <DesktopIcons onOpenFolder={() => handleOpenWindow('files', 'File Explorer')} />
+      <div className="absolute inset-0 z-10">
+        <DesktopIcons onOpenFolder={() => handleOpenWindow('files', 'File Explorer')} />
+      </div>
 
       {/* Window Manager Area */}
       <div className="absolute inset-0 z-10 pointer-events-none">

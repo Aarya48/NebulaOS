@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence, useDragControls } from 'motion/react';
 import { X, Minus, Square } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useSettings } from '@/lib/SettingsContext';
 
 export interface AppWindowProps {
   id: string;
@@ -32,6 +33,7 @@ export function AppWindow({
 }: AppWindowProps) {
   const windowRef = useRef<HTMLDivElement>(null);
   const dragControls = useDragControls();
+  const { preferences } = useSettings();
 
   return (
     <div
@@ -57,7 +59,7 @@ export function AppWindow({
           x: isMaximized ? 0 : undefined
         }}
         exit={{ opacity: 0, scale: 0.95 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        transition={preferences.reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 300, damping: 25 }}
         drag={!isMaximized}
         dragMomentum={false}
         dragElastic={0}
@@ -69,7 +71,7 @@ export function AppWindow({
           isActive 
             ? "border-os-main/50 shadow-[0_0_40px_rgba(var(--os-main),0.2)]" 
             : "border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.5)]",
-          "bg-[#05010A]/90 backdrop-blur-3xl"
+          preferences.windowGlassmorphism ? "bg-[#05010A]/90 backdrop-blur-3xl" : "bg-[#05010A]"
         )}
       >
       {/* Title Bar (Draggable Area) */}

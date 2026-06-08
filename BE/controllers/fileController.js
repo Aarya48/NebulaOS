@@ -38,7 +38,8 @@ const getFiles = async (req, res) => {
   try {
     const files = await File.find({
       owner: req.user.id,
-      isDeleted:false,
+      isDeleted: false,
+      parentFolder: null
     });
 
     res.status(200).json({

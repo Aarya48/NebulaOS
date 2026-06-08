@@ -516,6 +516,38 @@ const getRecentFiles = async (req, res) => {
   }
 };
 
+const updateContent = async (req, res) => {
+  const { id } = req.params;
+  const { content } = req.body;
+  try {
+    const file = await File.findById(id);
+    if (!file) {
+      return res.status(404).json({
+        success: false,
+        message: "file not found",
+      });
+    }
+    if (file.owner.toString() != req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+    file.content = content || "";
+    await file.save();
+    res.status(200).json({
+      success: true,
+      message: "File updated successfully",
+      file,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createFolder,
   createFile,
@@ -532,6 +564,6 @@ module.exports = {
   getTrashFiles,
 restoreFile,
 permanentDelete,
-
+updateContent
 };
 

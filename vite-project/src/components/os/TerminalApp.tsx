@@ -7,7 +7,7 @@ export type TerminalLine = {
 
 export function TerminalApp() {
   const [history, setHistory] = useState<TerminalLine[]>([
-    { type: 'system', content: 'NebulaOS Terminal v2.0.0 (Connected to File System)' },
+    { type: 'system', content: 'NebulaOS Terminal v2.0.0' },
     { type: 'system', content: 'Type "help" for a list of commands.' },
     { type: 'system', content: '' }
   ]);
@@ -217,22 +217,7 @@ export function TerminalApp() {
       onClick={() => document.getElementById('terminal-input')?.focus()}
     >
       <style>{`
-        .terminal-crt::before {
-          content: " ";
-          display: block;
-          position: absolute;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-          z-index: 2;
-          background-size: 100% 2px, 3px 100%;
-          pointer-events: none;
-        }
-        .terminal-crt {
-          text-shadow: 0 0 5px rgba(51, 255, 51, 0.5);
-        }
+        /* Removed heavy CRT gradient effects for performance */
       `}</style>
       
       <div className="w-full max-w-full z-10 relative">

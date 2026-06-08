@@ -16,6 +16,7 @@ import {
   Monitor
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getFileIconData } from '@/lib/fileIcons';
 import { motion, AnimatePresence } from 'motion/react';
 
 export interface FileItem {
@@ -330,14 +331,17 @@ export function FileExplorerApp() {
     if (item.type === 'folder') {
       navigateToFolder(item._id, item.name);
     } else {
-      await showAlert(`Opening: ${item.name}`, `Content:\n\n${item.content || '(Empty)'}`);
+      window.dispatchEvent(new CustomEvent('nebula_open_editor_intent', { detail: { id: item._id } }));
       
       // Mark as opened
       const token = localStorage.getItem('nebula_token');
-      fetch(`http://localhost:5000/api/files/open/${item._id}`, {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      try {
+        await fetch(`http://localhost:5000/api/files/open/${item._id}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        fetchFiles();
+      } catch (e) {}
     }
   };
 
@@ -445,29 +449,32 @@ export function FileExplorerApp() {
           ) : (
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-6 place-items-start">
               <AnimatePresence>
-                {files.map((file) => (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    key={file._id}
-                    className="flex flex-col items-center p-3 rounded-xl hover:bg-white/10 transition-colors w-full cursor-pointer group relative"
-                    onDoubleClick={() => handleItemDoubleClick(file)}
-                    onContextMenu={(e) => handleContextMenu(e, file._id)}
-                  >
-                    <div className="relative mb-3">
-                      {file.type === 'folder' ? (
-                        <Folder className="w-12 h-12 text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]" fill="currentColor" fillOpacity={0.2} />
-                      ) : (
-                        <FileText className="w-12 h-12 text-gray-300 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]" />
-                      )}
-                      {file.isFavorite && (
-                        <Star className="w-4 h-4 text-yellow-400 absolute -bottom-1 -right-1 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]" fill="currentColor" />
-                      )}
-                    </div>
-                    <span className="text-center truncate w-full text-gray-300 group-hover:text-white transition-colors">{file.name}</span>
-                  </motion.div>
-                ))}
+                {files.map((file) => {
+                  const { icon: FileIcon, colorClass, glowClass } = getFileIconData(file.name);
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      key={file._id}
+                      className="flex flex-col items-center p-3 rounded-xl hover:bg-white/10 transition-colors w-full cursor-pointer group relative"
+                      onDoubleClick={() => handleItemDoubleClick(file)}
+                      onContextMenu={(e) => handleContextMenu(e, file._id)}
+                    >
+                      <div className="relative mb-3">
+                        {file.type === 'folder' ? (
+                          <Folder className="w-12 h-12 text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]" fill="currentColor" fillOpacity={0.2} />
+                        ) : (
+                          <FileIcon className={cn("w-12 h-12 transition-all", colorClass, glowClass)} />
+                        )}
+                        {file.isFavorite && (
+                          <Star className="w-4 h-4 text-yellow-400 absolute -bottom-1 -right-1 drop-shadow-[0_0_5px_rgba(250,204,21,0.8)]" fill="currentColor" />
+                        )}
+                      </div>
+                      <span className="text-center truncate w-full text-gray-300 group-hover:text-white transition-colors">{file.name}</span>
+                    </motion.div>
+                  );
+                })}
               </AnimatePresence>
             </div>
           )}

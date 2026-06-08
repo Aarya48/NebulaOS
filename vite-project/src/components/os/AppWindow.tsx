@@ -33,25 +33,29 @@ export function AppWindow({
   const windowRef = useRef<HTMLDivElement>(null);
   const dragControls = useDragControls();
 
-  if (isMinimized) return null;
-
   return (
     <div
       style={{
         position: 'absolute',
         zIndex,
+        transition: 'top 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         ...(isMaximized 
           ? { top: '4rem', left: 0, width: '100vw', height: 'calc(100vh - 4rem)' } 
           : { top: '15vh', left: 'calc(50vw - 400px)', width: 800, height: 500 }
         )
       }}
-      className="pointer-events-none"
+      className={cn("pointer-events-none", isMinimized && "invisible delay-300")}
       onMouseDown={() => onFocus(id)}
     >
       <motion.div
         ref={windowRef}
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ 
+          opacity: isMinimized ? 0 : 1, 
+          scale: isMinimized ? 0.95 : 1,
+          y: isMinimized ? 50 : (isMaximized ? 0 : undefined),
+          x: isMaximized ? 0 : undefined
+        }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         drag={!isMaximized}
@@ -59,6 +63,7 @@ export function AppWindow({
         dragElastic={0}
         dragListener={false}
         dragControls={dragControls}
+        style={{ pointerEvents: isMinimized ? 'none' : 'auto' }}
         className={cn(
           "w-full h-full flex flex-col rounded-xl overflow-hidden shadow-2xl border transition-shadow duration-200 pointer-events-auto relative",
           isActive 

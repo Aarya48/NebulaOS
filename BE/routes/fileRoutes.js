@@ -4,7 +4,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const {
   createFolder,
   createFile,
-  getFiles,getFolderContent,rename,deleteItem,moveItem,searchFiles,changeFavorite,getFavorites,getRecentFiles,openFile,getTrashFiles,restoreFile,permanentDelete,
+  getFiles,getFolderContent,rename,deleteItem,moveItem,searchFiles,changeFavorite,getFavorites,getRecentFiles,openFile,getTrashFiles,restoreFile,permanentDelete,updateContent
 } = require("../controllers/fileController");
 
 const router = express.Router();
@@ -32,6 +32,7 @@ router.put("/favorite/:id",authMiddleware,changeFavorite);
 router.get("/favorite",authMiddleware,getFavorites);
 router.get("/recent",authMiddleware,getRecentFiles);
 router.put("/open/:id",authMiddleware,openFile);
+router.put("/content/:id",authMiddleware,updateContent);
 
 router.get(
   "/trash",

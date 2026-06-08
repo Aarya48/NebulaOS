@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { cn } from '@/lib/utils';
@@ -9,6 +10,7 @@ import { TerminalApp } from '@/components/os/TerminalApp';
 import { FileExplorerApp } from '@/components/os/FileExplorerApp';
 import { DesktopIcons } from '@/components/os/DesktopIcons';
 import { TrashApp } from '@/components/os/TrashApp';
+import { CodeEditorApp } from '@/components/os/CodeEditorApp';
 import { 
   FolderOpen, 
   Terminal as TerminalIcon, 
@@ -20,7 +22,8 @@ import {
   BatteryMedium,
   BatteryLow,
   LogOut,
-  Eclipse
+  Eclipse,
+  Code2
 } from 'lucide-react';
 
 export default function OSPage() {
@@ -31,6 +34,21 @@ export default function OSPage() {
   
   // Window Management State
   const [windows, setWindows] = useState<any[]>([]);
+
+  useEffect(() => {
+    const handleOpenEditorIntent = (e: any) => {
+      const targetId = e.detail?.id;
+      if (targetId) {
+        handleOpenWindow('editor', 'Code Editor');
+        // Give the editor time to mount before passing the file ID
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('nebula_open_editor', { detail: { id: targetId } }));
+        }, 300);
+      }
+    };
+    window.addEventListener('nebula_open_editor_intent', handleOpenEditorIntent);
+    return () => window.removeEventListener('nebula_open_editor_intent', handleOpenEditorIntent);
+  }, []);
 
   const handleOpenWindow = (type: string, title: string) => {
     setWindows(prev => {
@@ -161,9 +179,13 @@ export default function OSPage() {
               <FolderOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Files</span>
             </button>
-            <button onClick={() => handleOpenWindow('terminal', 'Terminal')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-fuchsia-400 transition-colors group">
+            <button onClick={() => handleOpenWindow('terminal', 'Terminal')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-green-400 transition-colors group">
               <TerminalIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Terminal</span>
+            </button>
+            <button onClick={() => handleOpenWindow('editor', 'Code Editor')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-yellow-400 transition-colors group">
+              <Code2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span className="uppercase tracking-widest">Editor</span>
             </button>
             <button onClick={() => handleOpenWindow('blackhole', 'Blackhole')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-red-400 transition-colors group">
               <Eclipse className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -232,26 +254,36 @@ export default function OSPage() {
 
         {/* Window Manager Area */}
         <div className="absolute inset-0 z-10 pointer-events-none">
-          {windows.map(win => (
-            <div key={win.id} className="pointer-events-auto">
-              <AppWindow
-                id={win.id}
-                title={win.title}
-                isMinimized={win.isMinimized}
-                isMaximized={win.isMaximized}
-                isActive={win.isActive}
-                zIndex={win.zIndex}
-                onClose={handleCloseWindow}
-                onMinimize={handleMinimizeWindow}
-                onMaximize={handleMaximizeWindow}
-                onFocus={handleFocusWindow}
+          <AnimatePresence>
+            {windows.map(win => (
+              <motion.div 
+                key={win.id} 
+                className="pointer-events-auto"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.2 }}
               >
-                {win.type === 'terminal' && <TerminalApp />}
-                {win.type === 'files' && <FileExplorerApp />}
-                {win.type === 'blackhole' && <TrashApp />}
-              </AppWindow>
-            </div>
-          ))}
+                <AppWindow
+                  id={win.id}
+                  title={win.title}
+                  isMinimized={win.isMinimized}
+                  isMaximized={win.isMaximized}
+                  isActive={win.isActive}
+                  zIndex={win.zIndex}
+                  onClose={handleCloseWindow}
+                  onMinimize={handleMinimizeWindow}
+                  onMaximize={handleMaximizeWindow}
+                  onFocus={handleFocusWindow}
+                >
+                  {win.type === 'terminal' && <TerminalApp />}
+                  {win.type === 'files' && <FileExplorerApp />}
+                  {win.type === 'blackhole' && <TrashApp />}
+                  {win.type === 'editor' && <CodeEditorApp />}
+                </AppWindow>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
 
         <Taskbar windows={windows} onWindowClick={handleTaskbarClick} />

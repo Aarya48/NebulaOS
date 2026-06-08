@@ -7,6 +7,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getFileIconData } from '@/lib/fileIcons';
 import { motion, AnimatePresence } from 'motion/react';
 import type { FileItem } from './FileExplorerApp';
 
@@ -191,25 +192,28 @@ export function TrashApp() {
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
             <AnimatePresence>
-              {files.map((file) => (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  key={file._id}
-                  className="flex flex-col items-center p-3 rounded-xl hover:bg-red-500/10 transition-colors w-full cursor-pointer group relative border border-transparent hover:border-red-500/20"
-                  onContextMenu={(e) => handleContextMenu(e, file._id)}
-                >
-                  <div className="relative mb-3">
-                    {file.type === 'folder' ? (
-                      <Folder className="w-12 h-12 text-red-400/70 drop-shadow-[0_0_10px_rgba(248,113,113,0.3)]" fill="currentColor" fillOpacity={0.1} />
-                    ) : (
-                      <FileText className="w-12 h-12 text-gray-400 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]" />
-                    )}
-                  </div>
-                  <span className="text-center truncate w-full text-gray-400 group-hover:text-red-300 transition-colors">{file.name}</span>
-                </motion.div>
-              ))}
+              {files.map((file) => {
+                const { icon: FileIcon, colorClass, glowClass } = getFileIconData(file.name);
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    key={file._id}
+                    className="flex flex-col items-center p-3 rounded-xl hover:bg-red-500/10 transition-colors w-full cursor-pointer group relative border border-transparent hover:border-red-500/20"
+                    onContextMenu={(e) => handleContextMenu(e, file._id)}
+                  >
+                    <div className="relative mb-3">
+                      {file.type === 'folder' ? (
+                        <Folder className="w-12 h-12 text-red-400/70 drop-shadow-[0_0_10px_rgba(248,113,113,0.3)]" fill="currentColor" fillOpacity={0.1} />
+                      ) : (
+                        <FileIcon className={cn("w-12 h-12 transition-all", colorClass, glowClass, "opacity-70")} />
+                      )}
+                    </div>
+                    <span className="text-center truncate w-full text-gray-400 group-hover:text-red-300 transition-colors">{file.name}</span>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
         )}

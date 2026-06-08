@@ -275,7 +275,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
                   key={file._id}
                   className={cn(
                     "flex flex-col items-center p-2 rounded-xl transition-colors w-24 cursor-pointer group pointer-events-auto",
-                    selectedIds.includes(file._id) ? "bg-cyan-500/20 ring-1 ring-cyan-500/50" : "hover:bg-white/10"
+                    selectedIds.includes(file._id) ? "bg-os-main/20 ring-1 ring-os-main/50" : "hover:bg-white/10"
                   )}
                   onClick={(e) => handleItemClick(e, file._id)}
                   onDoubleClick={() => handleDoubleClick(file)}
@@ -283,7 +283,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
                 >
                   <div className="relative mb-2 pointer-events-none">
                     {file.type === 'folder' ? (
-                      <Folder className="w-12 h-12 text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]" fill="currentColor" fillOpacity={0.2} />
+                      <Folder className="w-12 h-12 text-os-main drop-shadow-[0_0_10px_rgba(var(--os-main),0.5)]" fill="currentColor" fillOpacity={0.2} />
                     ) : (
                       <FileIcon className={cn("w-12 h-12 transition-all", colorClass, glowClass)} />
                     )}
@@ -293,7 +293,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
                   </div>
                   <span className={cn(
                     "text-center text-xs text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] px-1 rounded-sm truncate w-full pointer-events-none",
-                    selectedIds.includes(file._id) ? "bg-cyan-500/30" : "group-hover:bg-cyan-500/30"
+                    selectedIds.includes(file._id) ? "bg-os-main/30" : "group-hover:bg-os-main/30"
                   )}>
                     {file.name}
                   </span>
@@ -383,7 +383,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
               <input 
                 type="text" 
                 autoFocus
-                className="w-full bg-black/50 border border-white/10 rounded-md p-2 text-white outline-none focus:border-cyan-500 transition-colors"
+                className="w-full bg-black/50 border border-white/10 rounded-md p-2 text-white outline-none focus:border-os-main transition-colors"
                 value={promptValue}
                 onChange={(e) => setPromptValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && dialog.onConfirm?.(promptValue)}
@@ -401,7 +401,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
               )}
               <button 
                 onClick={() => dialog.onConfirm?.(dialog.type === 'prompt' ? promptValue : undefined)}
-                className="px-4 py-2 text-sm bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 rounded-md transition-colors font-medium"
+                className="px-4 py-2 text-sm bg-os-main/20 text-os-main hover:bg-os-main/30 rounded-md transition-colors font-medium"
               >
                 OK
               </button>

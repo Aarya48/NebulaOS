@@ -1,6 +1,6 @@
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
-import { Terminal, FolderOpen, Eclipse, Code2, Globe } from 'lucide-react';
+import { Terminal, FolderOpen, Eclipse, Code2, Globe, Settings } from 'lucide-react';
 
 export interface TaskbarProps {
   windows: Array<{ id: string; type: string; title: string; isMinimized: boolean; isActive: boolean }>;
@@ -9,10 +9,11 @@ export interface TaskbarProps {
 
 const WINDOW_TYPES = {
   terminal: { icon: Terminal, color: 'text-green-400' },
-  files: { icon: FolderOpen, color: 'text-cyan-400' },
+  files: { icon: FolderOpen, color: 'text-os-main' },
   blackhole: { icon: Eclipse, color: 'text-red-400' },
   editor: { icon: Code2, color: 'text-yellow-400' },
-  browser: { icon: Globe, color: 'text-blue-400' }
+  browser: { icon: Globe, color: 'text-blue-400' },
+  settings: { icon: Settings, color: 'text-gray-400' }
 };
 
 export function Taskbar({ windows, onWindowClick }: TaskbarProps) {

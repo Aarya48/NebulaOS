@@ -67,7 +67,7 @@ export function AppWindow({
         className={cn(
           "w-full h-full flex flex-col rounded-xl overflow-hidden shadow-2xl border transition-shadow duration-200 pointer-events-auto relative",
           isActive 
-            ? "border-cyan-500/50 shadow-[0_0_40px_rgba(6,182,212,0.2)]" 
+            ? "border-os-main/50 shadow-[0_0_40px_rgba(var(--os-main),0.2)]" 
             : "border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.5)]",
           "bg-[#05010A]/90 backdrop-blur-3xl"
         )}

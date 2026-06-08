@@ -12,6 +12,8 @@ import { DesktopIcons } from '@/components/os/DesktopIcons';
 import { TrashApp } from '@/components/os/TrashApp';
 import { CodeEditorApp } from '@/components/os/CodeEditorApp';
 import { BrowserApp } from '@/components/os/BrowserApp';
+import { SettingsApp } from '@/components/os/SettingsApp';
+import { useSettings } from '@/lib/SettingsContext';
 import { 
   FolderOpen, 
   Terminal as TerminalIcon, 
@@ -34,6 +36,8 @@ export default function OSPage() {
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState<{ level: number, charging: boolean } | null>(null);
   
+  const { wallpaper } = useSettings();
+
   // Window Management State
   const [windows, setWindows] = useState<any[]>([]);
 
@@ -213,7 +217,7 @@ export default function OSPage() {
               <Eclipse className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Blackhole</span>
             </button>
-            <button className="flex items-center space-x-2 text-sm text-gray-400 hover:text-white transition-colors group">
+            <button onClick={() => handleOpenWindow('settings', 'Settings')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-white transition-colors group">
               <Settings className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Settings</span>
             </button>
@@ -261,57 +265,70 @@ export default function OSPage() {
       </nav>
 
       {/* Main Background */}
-      <StarsBackground
-        starColor="#E2E8F0"
-        className={cn(
-          'absolute inset-0 flex flex-col items-center justify-center pt-16',
-          'bg-[#05010A]'
-        )}
-      >
-        {/* Subtle geometric grid overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_30%,transparent_100%)] pointer-events-none"></div>
-        
-        {/* Desktop Icons */}
-        <DesktopIcons onOpenFolder={() => handleOpenWindow('files', 'File Explorer')} />
-
-        {/* Window Manager Area */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
-          <AnimatePresence>
-            {windows.map(win => (
-              <motion.div 
-                key={win.id} 
-                className="pointer-events-auto"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <AppWindow
-                  id={win.id}
-                  title={win.title}
-                  isMinimized={win.isMinimized}
-                  isMaximized={win.isMaximized}
-                  isActive={win.isActive}
-                  zIndex={win.zIndex}
-                  onClose={handleCloseWindow}
-                  onMinimize={handleMinimizeWindow}
-                  onMaximize={handleMaximizeWindow}
-                  onFocus={handleFocusWindow}
-                >
-                  {win.type === 'terminal' && <TerminalApp />}
-                  {win.type === 'files' && <FileExplorerApp />}
-                  {win.type === 'blackhole' && <TrashApp />}
-                  {win.type === 'editor' && <CodeEditorApp />}
-                  {win.type === 'browser' && <BrowserApp />}
-                </AppWindow>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+      {wallpaper && wallpaper !== '/wallpapers/default.jpg' ? (
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000"
+          style={{ backgroundImage: `url(${wallpaper})` }}
+        >
+          <div className="absolute inset-0 bg-black/20 pointer-events-none"></div>
         </div>
+      ) : (
+        <StarsBackground
+          starColor="#E2E8F0"
+          className={cn(
+            'absolute inset-0 flex flex-col items-center justify-center pt-16 transition-colors duration-1000',
+            'bg-[#05010A] bg-[radial-gradient(ellipse_at_top,rgb(var(--os-main)/0.25)_0%,transparent_70%)]'
+          )}
+        />
+      )}
 
-        <Taskbar windows={windows} onWindowClick={handleTaskbarClick} />
+      {/* Subtle geometric grid overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_30%,transparent_100%)] pointer-events-none z-0"></div>
 
-      </StarsBackground>
+      {/* Desktop Icons */}
+      <DesktopIcons onOpenFolder={() => handleOpenWindow('files', 'File Explorer')} />
+
+      {/* Window Manager Area */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        <AnimatePresence>
+          {windows.map(win => (
+            <motion.div 
+              key={win.id} 
+              className="pointer-events-auto"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2 }}
+            >
+              <AppWindow
+                id={win.id}
+                title={win.title}
+                isMinimized={win.isMinimized}
+                isMaximized={win.isMaximized}
+                isActive={win.isActive}
+                zIndex={win.zIndex}
+                onClose={handleCloseWindow}
+                onMinimize={handleMinimizeWindow}
+                onMaximize={handleMaximizeWindow}
+                onFocus={handleFocusWindow}
+              >
+                {win.type === 'files' && <FileExplorerApp />}
+                {win.type === 'terminal' && <TerminalApp />}
+                {win.type === 'editor' && <CodeEditorApp />}
+                {win.type === 'browser' && <BrowserApp />}
+                {win.type === 'trash' && <TrashApp />}
+                {win.type === 'settings' && <SettingsApp />}
+              </AppWindow>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Taskbar */}
+      <Taskbar 
+        windows={windows} 
+        onWindowClick={handleTaskbarClick} 
+      />
     </div>
   );
 }

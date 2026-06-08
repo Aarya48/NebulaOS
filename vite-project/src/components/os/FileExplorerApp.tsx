@@ -411,7 +411,7 @@ export function FileExplorerApp() {
         
         <button 
           onClick={() => { setCurrentView('files'); navigateToFolder(null, 'Home'); }}
-          className={cn("flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors", currentView === 'files' ? "bg-cyan-500/20 text-cyan-400" : "hover:bg-white/5 text-gray-300")}
+          className={cn("flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors", currentView === 'files' ? "bg-os-main/20 text-os-main" : "hover:bg-white/5 text-gray-300")}
         >
           <Home className="w-4 h-4" />
           <span>Home</span>
@@ -455,7 +455,7 @@ export function FileExplorerApp() {
                   <button 
                     onClick={() => navigateToFolder(crumb.id, crumb.name)}
                     className={cn(
-                      "hover:text-cyan-400 transition-colors truncate max-w-[120px]",
+                      "hover:text-os-main transition-colors truncate max-w-[120px]",
                       index === breadcrumbs.length - 1 ? "text-white font-medium" : ""
                     )}
                   >
@@ -476,10 +476,10 @@ export function FileExplorerApp() {
             {(currentView === 'files' || currentView === 'desktop') && (
               <>
                 <div className="w-px h-4 bg-white/10 mx-2"></div>
-                <button onClick={handleCreateFolder} className="p-2 hover:bg-cyan-500/20 text-cyan-400 rounded-md transition-colors flex items-center" title="New Folder">
+                <button onClick={handleCreateFolder} className="p-2 hover:bg-os-main/20 text-os-main rounded-md transition-colors flex items-center" title="New Folder">
                   <FolderPlus className="w-4 h-4" />
                 </button>
-                <button onClick={handleCreateFile} className="p-2 hover:bg-cyan-500/20 text-cyan-400 rounded-md transition-colors flex items-center" title="New File">
+                <button onClick={handleCreateFile} className="p-2 hover:bg-os-main/20 text-os-main rounded-md transition-colors flex items-center" title="New File">
                   <FilePlus className="w-4 h-4" />
                 </button>
               </>
@@ -511,7 +511,7 @@ export function FileExplorerApp() {
                       key={file._id}
                       className={cn(
                         "flex flex-col items-center p-3 rounded-xl transition-colors w-full cursor-pointer group relative",
-                        selectedIds.includes(file._id) ? "bg-cyan-500/20 ring-1 ring-cyan-500/50" : "hover:bg-white/10"
+                        selectedIds.includes(file._id) ? "bg-os-main/20 ring-1 ring-os-main/50" : "hover:bg-white/10"
                       )}
                       onClick={(e) => handleItemClick(e, file._id)}
                       onDoubleClick={() => handleItemDoubleClick(file)}
@@ -519,7 +519,7 @@ export function FileExplorerApp() {
                     >
                       <div className="relative mb-3">
                         {file.type === 'folder' ? (
-                          <Folder className="w-12 h-12 text-cyan-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]" fill="currentColor" fillOpacity={0.2} />
+                          <Folder className="w-12 h-12 text-os-main drop-shadow-[0_0_10px_rgba(var(--os-main),0.5)]" fill="currentColor" fillOpacity={0.2} />
                         ) : (
                           <FileIcon className={cn("w-12 h-12 transition-all", colorClass, glowClass)} />
                         )}
@@ -620,7 +620,7 @@ export function FileExplorerApp() {
                 <input 
                   type="text" 
                   autoFocus
-                  className="w-full bg-black/50 border border-white/10 rounded-md p-2 text-white outline-none focus:border-cyan-500 transition-colors"
+                  className="w-full bg-black/50 border border-white/10 rounded-md p-2 text-white outline-none focus:border-os-main transition-colors"
                   value={promptValue}
                   onChange={(e) => setPromptValue(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && dialog.onConfirm?.(promptValue)}
@@ -638,7 +638,7 @@ export function FileExplorerApp() {
                 )}
                 <button 
                   onClick={() => dialog.onConfirm?.(dialog.type === 'prompt' ? promptValue : undefined)}
-                  className="px-4 py-2 text-sm bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 rounded-md transition-colors font-medium"
+                  className="px-4 py-2 text-sm bg-os-main/20 text-os-main hover:bg-os-main/30 rounded-md transition-colors font-medium"
                 >
                   OK
                 </button>

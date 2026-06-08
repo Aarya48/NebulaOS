@@ -43,7 +43,7 @@ const FileTreeNode = ({
           style={{ paddingLeft: `${depth * 12 + 8}px` }}
         >
           {isExpanded ? <ChevronDown className="w-3 h-3 mr-1 opacity-70" /> : <ChevronRight className="w-3 h-3 mr-1 opacity-70" />}
-          <Folder className="w-3 h-3 mr-1.5 text-cyan-400 drop-shadow-[0_0_5px_rgba(6,182,212,0.5)]" fill="currentColor" fillOpacity={0.2} />
+          <Folder className="w-3 h-3 mr-1.5 text-os-main drop-shadow-[0_0_5px_rgba(var(--os-main),0.5)]" fill="currentColor" fillOpacity={0.2} />
           <span className="truncate">{item.name}</span>
         </button>
         {isExpanded && children.map((child: FileItem) => (
@@ -73,7 +73,7 @@ const FileTreeNode = ({
       onClick={() => openFile(item)}
       className={cn(
         "w-full flex items-center py-1 text-xs group transition-colors",
-        isActive ? "bg-cyan-500/10 text-white border-r-2 border-cyan-500" : "hover:bg-white/5 text-gray-400 border-r-2 border-transparent"
+        isActive ? "bg-os-main/10 text-white border-r-2 border-os-main" : "hover:bg-white/5 text-gray-400 border-r-2 border-transparent"
       )}
       style={{ paddingLeft: `${depth * 12 + 20}px` }}
     >
@@ -342,7 +342,7 @@ export function CodeEditorApp() {
           <span>Explorer</span>
           <button 
             onClick={() => setIsSelectingRoot(!isSelectingRoot)}
-            className="p-1 hover:bg-white/10 rounded transition-colors text-cyan-400"
+            className="p-1 hover:bg-white/10 rounded transition-colors text-os-main"
             title="Select Root Folder"
           >
             <FolderOpen className="w-3.5 h-3.5" />
@@ -359,7 +359,7 @@ export function CodeEditorApp() {
               <div className="text-xs text-gray-500 mb-2 px-2 uppercase font-semibold">Select Root Folder</div>
               <button 
                 onClick={() => { setRootFolderId(null); setIsSelectingRoot(false); }} 
-                className="w-full text-left px-2 py-1.5 text-xs text-cyan-400 hover:text-cyan-300 hover:bg-white/5 rounded flex items-center"
+                className="w-full text-left px-2 py-1.5 text-xs text-os-main hover:text-os-main/80 hover:bg-white/5 rounded flex items-center"
               >
                 <Folder className="w-3 h-3 mr-2" /> / (Home)
               </button>
@@ -378,7 +378,7 @@ export function CodeEditorApp() {
               {rootFolderId && (
                  <button 
                    onClick={() => setRootFolderId(null)} 
-                   className="mx-4 mb-2 flex items-center text-xs text-cyan-400 hover:text-cyan-300 transition-colors bg-cyan-500/10 px-2 py-1 rounded"
+                   className="mx-4 mb-2 flex items-center text-xs text-os-main hover:text-os-main/80 transition-colors bg-os-main/10 px-2 py-1 rounded"
                  >
                     <ArrowLeft className="w-3 h-3 mr-1" /> Back to Home
                  </button>
@@ -445,8 +445,8 @@ export function CodeEditorApp() {
                 className={cn(
                   "flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-colors",
                   !activeFileId ? "bg-gray-800 text-gray-500 cursor-not-allowed" 
-                  : isSaving ? "bg-cyan-900 text-cyan-500" 
-                  : "bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30"
+                  : isSaving ? "bg-os-main/20 text-os-main" 
+                  : "bg-os-main/20 text-os-main hover:bg-os-main/30"
                 )}
               >
                 {isSaving ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
@@ -468,7 +468,7 @@ export function CodeEditorApp() {
                     onClick={() => setActiveFileId(file._id)}
                     className={cn(
                       "flex items-center px-4 py-2 border-r border-white/5 cursor-pointer min-w-max group transition-colors",
-                      isActive ? "bg-[#120a1c] border-t-2 border-t-cyan-500 text-white" : "bg-[#0a0514] border-t-2 border-t-transparent text-gray-500 hover:bg-white/5 hover:text-gray-300"
+                      isActive ? "bg-[#120a1c] border-t-2 border-t-os-main text-white" : "bg-[#0a0514] border-t-2 border-t-transparent text-gray-500 hover:bg-white/5 hover:text-gray-300"
                     )}
                   >
                     <Icon className={cn("w-3.5 h-3.5 mr-2 shrink-0 transition-colors", isActive ? colorClass : "opacity-70 group-hover:opacity-100")} />

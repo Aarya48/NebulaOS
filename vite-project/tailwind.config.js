@@ -12,6 +12,9 @@ export default {
         ring: "oklch(var(--ring) / <alpha-value>)",
         background: "oklch(var(--background) / <alpha-value>)",
         foreground: "oklch(var(--foreground) / <alpha-value>)",
+        os: {
+          main: "rgb(var(--os-main) / <alpha-value>)",
+        }
       }
     },
   },

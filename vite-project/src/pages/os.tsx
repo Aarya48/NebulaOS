@@ -27,11 +27,9 @@ export default function OSPage() {
       {/* Top OS Navbar Placeholder */}
       <nav className="absolute top-0 inset-x-0 h-16 z-50 flex items-center justify-between px-8 bg-[#05010A]/80 backdrop-blur-md border-b border-white/5 shadow-md">
         <div className="flex items-center space-x-4">
-          {/* LOGO PLACEHOLDER */}
-          <div className="w-8 h-8 rounded-full border border-cyan-500/50 flex items-center justify-center bg-cyan-900/20 overflow-hidden shadow-[0_0_10px_rgba(6,182,212,0.3)]">
-            {/* When you have the logo image, use an img tag here with transparent background */}
-            {/* <img src="/logo.png" alt="OS Logo" className="w-full h-full object-contain" /> */}
-            <span className="text-cyan-300 font-bold text-xs">OS</span>
+          {/* OS LOGO */}
+          <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden drop-shadow-[0_0_10px_rgba(6,182,212,0.5)]">
+            <img src="/file_000000006bd471f893e5a640a1e02db2.png" alt="NebulaOS Logo" className="w-full h-full object-contain" />
           </div>
           
           <span className="text-lg font-light tracking-widest text-white uppercase drop-shadow-[0_0_10px_rgba(168,85,247,0.4)]">
@@ -69,11 +67,10 @@ export default function OSPage() {
         <div className="relative z-10 w-full h-full flex items-center justify-center">
           <div className="flex flex-col items-center text-center max-w-2xl px-6">
             
-            {/* Large Center Logo Placeholder */}
-            <div className="w-32 h-32 mb-8 rounded-2xl border-2 border-white/10 bg-white/5 backdrop-blur-xl flex items-center justify-center relative shadow-[0_0_50px_rgba(168,85,247,0.15)] group hover:border-cyan-500/50 transition-all duration-500">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-fuchsia-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-md"></div>
-              {/* <img src="/logo.png" alt="Large Logo" className="w-24 h-24 object-contain relative z-10" /> */}
-              <div className="text-4xl font-bold text-white relative z-10 opacity-50">LOGO</div>
+            {/* Large Center Logo */}
+            <div className="w-32 h-32 mb-8 flex items-center justify-center relative group transition-all duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/40 to-fuchsia-500/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full blur-2xl"></div>
+              <img src="/file_000000006bd471f893e5a640a1e02db2.png" alt="NebulaOS Large Logo" className="w-32 h-32 object-contain relative z-10 drop-shadow-[0_0_30px_rgba(168,85,247,0.4)]" />
             </div>
 
             <h1 className="text-3xl md:text-5xl font-light text-white tracking-widest uppercase mb-4 animate-in slide-in-from-bottom-4 fade-in duration-1000">

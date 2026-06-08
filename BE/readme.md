@@ -1413,6 +1413,140 @@ Authorization: Bearer <JWT_TOKEN>
 
 ---
 
+---
+
+### 15. Get Trash Files
+
+**Method:** `GET`
+
+**Route:**
+```http
+GET /api/files/trash
+```
+
+**Description:**
+Retrieves all files and folders marked as deleted (`isDeleted: true`) for the authenticated user. Useful for displaying a trash/recycle bin view.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "count": 2,
+  "files": [
+    {
+      "_id": "507f1f77bcf86cd799439020",
+      "name": "old-doc.txt",
+      "type": "file",
+      "isDeleted": true,
+      "deletedAt": "2024-06-05T11:00:00.000Z"
+    }
+  ]
+}
+```
+
+**Status Code:** `200 OK`
+
+**Error Responses:**
+
+- `401 Unauthorized` when token is missing or invalid
+- `500 Internal Server Error` for server/database issues
+
+---
+
+### 16. Restore File
+
+**Method:** `PUT`
+
+**Route:**
+```http
+PUT /api/files/restore/:id
+```
+
+**Description:**
+Restores a previously deleted file or folder by setting `isDeleted` to `false`.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Content-Type: application/json
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Parameters:**
+- `id` (path parameter): ID of the file or folder to restore
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "message": "File restored successfully",
+  "file": { ... }
+}
+```
+
+**Status Code:** `200 OK`
+
+**Error Responses:**
+
+- `404 Not Found` if the item does not exist
+- `403 Forbidden` if user does not own the item
+- `401 Unauthorized` when token is missing or invalid
+- `500 Internal Server Error` for server/database issues
+
+---
+
+### 17. Permanently Delete File
+
+**Method:** `DELETE`
+
+**Route:**
+```http
+DELETE /api/files/permanent/:id
+```
+
+**Description:**
+Permanently removes a file or folder from the database. This action is irreversible and should be used to clear items from the trash.
+
+**Authentication Required:** Yes
+
+**Request Headers:**
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**Request Parameters:**
+- `id` (path parameter): ID of the file or folder to permanently delete
+
+**Success Response:**
+
+```json
+{
+  "success": true,
+  "message": "File permanently deleted"
+}
+```
+
+**Status Code:** `200 OK`
+
+**Error Responses:**
+
+- `404 Not Found` if the item does not exist
+- `403 Forbidden` if user does not own the item
+- `401 Unauthorized` when token is missing or invalid
+- `500 Internal Server Error` for server/database issues
+
+---
+
 ## Database Models
 
 ### User Model

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { AppWindow } from '@/components/os/AppWindow';
 import { Taskbar } from '@/components/os/Taskbar';
 import { TerminalApp } from '@/components/os/TerminalApp';
+import { FileExplorerApp } from '@/components/os/FileExplorerApp';
 import { 
   FolderOpen, 
   Terminal as TerminalIcon, 
@@ -236,14 +237,7 @@ export default function OSPage() {
                 onFocus={handleFocusWindow}
               >
                 {win.type === 'terminal' && <TerminalApp />}
-                {win.type === 'files' && (
-                  <div className="w-full h-full bg-[#0a0514] text-white p-8 flex items-center justify-center">
-                    <div className="flex flex-col items-center opacity-50">
-                      <FolderOpen className="w-16 h-16 mb-4 text-cyan-500" />
-                      <p>File System coming soon...</p>
-                    </div>
-                  </div>
-                )}
+                {win.type === 'files' && <FileExplorerApp />}
               </AppWindow>
             </div>
           ))}

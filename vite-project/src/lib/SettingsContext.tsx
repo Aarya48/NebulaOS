@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 export type OSPreferences = {
@@ -77,7 +78,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
           return;
         }
 
-        const res = await fetch('http://localhost:5000/api/users/settings', {
+        const res = await fetch(`${API_BASE_URL}/api/users/settings`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -110,7 +111,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     try {
       const token = localStorage.getItem('nebula_token');
       if (token) {
-        await fetch('http://localhost:5000/api/users/theme', {
+        await fetch(`${API_BASE_URL}/api/users/theme`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -137,7 +138,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       const formData = new FormData();
       formData.append('wallpaper', file);
 
-      const res = await fetch('http://localhost:5000/api/users/wallpaper', {
+      const res = await fetch(`${API_BASE_URL}/api/users/wallpaper`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData

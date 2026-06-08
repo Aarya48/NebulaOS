@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import type { FileItem } from './FileExplorerApp';
@@ -73,7 +74,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
   const fetchDesktopFiles = useCallback(async () => {
     try {
       const token = localStorage.getItem('nebula_token');
-      const rootRes = await fetch('http://localhost:5000/api/files/', {
+      const rootRes = await fetch(`${API_BASE_URL}/api/files/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const rootData = await rootRes.json();
@@ -83,7 +84,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
         
         if (desktopFolder) {
           setDesktopFolderId(desktopFolder._id);
-          const contentRes = await fetch(`http://localhost:5000/api/files/folder/${desktopFolder._id}`, {
+          const contentRes = await fetch(`${API_BASE_URL}/api/files/folder/${desktopFolder._id}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const contentData = await contentRes.json();
@@ -152,7 +153,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
 
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch('http://localhost:5000/api/files/folder/create', {
+      const response = await fetch(`${API_BASE_URL}/api/files/folder/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -178,7 +179,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
 
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch('http://localhost:5000/api/files/file/create', {
+      const response = await fetch(`${API_BASE_URL}/api/files/file/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -205,7 +206,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
     try {
       const token = localStorage.getItem('nebula_token');
       await Promise.all(selectedIds.map(id => 
-        fetch(`http://localhost:5000/api/files/${id}`, {
+        fetch(`${API_BASE_URL}/api/files/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         })
@@ -225,7 +226,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
 
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch(`http://localhost:5000/api/files/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/files/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -247,7 +248,7 @@ export function DesktopIcons({ onOpenFolder }: { onOpenFolder: (folderId: string
   const handleToggleFavorite = async (id: string) => {
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch(`http://localhost:5000/api/files/favorite/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/files/favorite/${id}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });

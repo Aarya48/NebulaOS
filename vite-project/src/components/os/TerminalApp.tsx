@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import { useState, useRef, useEffect } from 'react';
 
 export type TerminalLine = {
@@ -27,8 +28,8 @@ export function TerminalApp() {
   const fetchCurrentContents = async () => {
     const token = localStorage.getItem('nebula_token');
     const url = currentFolderId 
-      ? `http://localhost:5000/api/files/folder/${currentFolderId}`
-      : `http://localhost:5000/api/files/`;
+      ? `${API_BASE_URL}/api/files/folder/${currentFolderId}`
+      : `${API_BASE_URL}/api/files/`;
     const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
     const data = await res.json();
     return data.success ? (data.files || []) : [];
@@ -111,7 +112,7 @@ export function TerminalApp() {
            if (!target) {
              newLines.push({ type: 'error', content: 'Usage: new <filename>' });
            } else {
-             const res = await fetch('http://localhost:5000/api/files/file/create', {
+             const res = await fetch(`${API_BASE_URL}/api/files/file/create`, {
                method: 'POST',
                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                body: JSON.stringify({ name: target, content: '', parentFolder: currentFolderId })
@@ -128,7 +129,7 @@ export function TerminalApp() {
            if (!target) {
              newLines.push({ type: 'error', content: 'Usage: nest <foldername>' });
            } else {
-             const res = await fetch('http://localhost:5000/api/files/folder/create', {
+             const res = await fetch(`${API_BASE_URL}/api/files/folder/create`, {
                method: 'POST',
                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                body: JSON.stringify({ name: target, parentFolder: currentFolderId })
@@ -154,7 +155,7 @@ export function TerminalApp() {
              } else if (item.name === 'Desktop' && item.parentFolder === null) {
                newLines.push({ type: 'error', content: 'Cannot rename the system Desktop folder.' });
              } else {
-               const res = await fetch(`http://localhost:5000/api/files/${item._id}`, {
+               const res = await fetch(`${API_BASE_URL}/api/files/${item._id}`, {
                  method: 'PUT',
                  headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                  body: JSON.stringify({ name: newName })
@@ -182,8 +183,8 @@ export function TerminalApp() {
                newLines.push({ type: 'error', content: 'Cannot delete the system Desktop folder.' });
              } else {
                const url = isPermanent 
-                 ? `http://localhost:5000/api/files/permanent/${item._id}`
-                 : `http://localhost:5000/api/files/${item._id}`;
+                 ? `${API_BASE_URL}/api/files/permanent/${item._id}`
+                 : `${API_BASE_URL}/api/files/${item._id}`;
                const res = await fetch(url, {
                  method: 'DELETE',
                  headers: { 'Authorization': `Bearer ${token}` }
@@ -197,7 +198,7 @@ export function TerminalApp() {
              }
            }
         } else if (mainCmd === 'bin') {
-           const res = await fetch('http://localhost:5000/api/files/trash', { headers: { 'Authorization': `Bearer ${token}` } });
+           const res = await fetch(`${API_BASE_URL}/api/files/trash`, { headers: { 'Authorization': `Bearer ${token}` } });
            const data = await res.json();
            if (data.success) {
              newLines.push({ type: 'output', content: '--- TRASH BIN ---' });
@@ -212,7 +213,7 @@ export function TerminalApp() {
              newLines.push({ type: 'error', content: 'Failed to access bin.' });
            }
         } else if (mainCmd === 'star') {
-           const res = await fetch('http://localhost:5000/api/files/favorite', { headers: { 'Authorization': `Bearer ${token}` } });
+           const res = await fetch(`${API_BASE_URL}/api/files/favorite`, { headers: { 'Authorization': `Bearer ${token}` } });
            const data = await res.json();
            if (data.success) {
              newLines.push({ type: 'output', content: '--- FAVORITES ---' });

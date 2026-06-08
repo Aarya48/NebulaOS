@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import { useState, useEffect, useCallback } from 'react';
 import { 
   Folder, 
@@ -55,7 +56,7 @@ export function TrashApp() {
     setError('');
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch('http://localhost:5000/api/files/trash', {
+      const response = await fetch(`${API_BASE_URL}/api/files/trash`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -91,7 +92,7 @@ export function TrashApp() {
   const handleRestore = async (id: string) => {
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch(`http://localhost:5000/api/files/restore/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/files/restore/${id}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -109,7 +110,7 @@ export function TrashApp() {
     if (!(await showConfirm('Obliterate Item', 'Are you sure you want to PERMANENTLY delete this item? It cannot be recovered.'))) return;
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch(`http://localhost:5000/api/files/permanent/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/files/permanent/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -129,7 +130,7 @@ export function TrashApp() {
     try {
       const token = localStorage.getItem('nebula_token');
       for (const file of files) {
-        await fetch(`http://localhost:5000/api/files/permanent/${file._id}`, {
+        await fetch(`${API_BASE_URL}/api/files/permanent/${file._id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });

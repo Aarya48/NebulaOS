@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { 
@@ -97,14 +98,14 @@ export function FileExplorerApp() {
     setError('');
     try {
       const token = localStorage.getItem('nebula_token');
-      let url = 'http://localhost:5000/api/files/';
+      let url = `${API_BASE_URL}/api/files/`;
       
       if (currentView === 'favorites') {
-        url = 'http://localhost:5000/api/files/favorite';
+        url = `${API_BASE_URL}/api/files/favorite`;
       } else if (currentView === 'recent') {
-        url = 'http://localhost:5000/api/files/recent';
+        url = `${API_BASE_URL}/api/files/recent`;
       } else if (currentFolder) {
-        url = `http://localhost:5000/api/files/folder/${currentFolder}`;
+        url = `${API_BASE_URL}/api/files/folder/${currentFolder}`;
       }
 
       const response = await fetch(url, {
@@ -153,7 +154,7 @@ export function FileExplorerApp() {
 
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch('http://localhost:5000/api/files/folder/create', {
+      const response = await fetch(`${API_BASE_URL}/api/files/folder/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -178,7 +179,7 @@ export function FileExplorerApp() {
 
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch('http://localhost:5000/api/files/file/create', {
+      const response = await fetch(`${API_BASE_URL}/api/files/file/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -206,7 +207,7 @@ export function FileExplorerApp() {
     if (!(await showConfirm('Delete Item', 'Are you sure you want to move this item to the trash?'))) return;
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch(`http://localhost:5000/api/files/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/files/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -233,7 +234,7 @@ export function FileExplorerApp() {
 
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch(`http://localhost:5000/api/files/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/files/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -255,7 +256,7 @@ export function FileExplorerApp() {
   const handleToggleFavorite = async (id: string) => {
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch(`http://localhost:5000/api/files/favorite/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/files/favorite/${id}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -292,7 +293,7 @@ export function FileExplorerApp() {
     try {
       const token = localStorage.getItem('nebula_token');
       // 1. Fetch root files
-      const rootRes = await fetch('http://localhost:5000/api/files/', {
+      const rootRes = await fetch(`${API_BASE_URL}/api/files/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const rootData = await rootRes.json();
@@ -302,7 +303,7 @@ export function FileExplorerApp() {
         
         // 2. Create if not exists
         if (!desktopFolder) {
-          const createRes = await fetch('http://localhost:5000/api/files/folder/create', {
+          const createRes = await fetch(`${API_BASE_URL}/api/files/folder/create`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -338,7 +339,7 @@ export function FileExplorerApp() {
       // Mark as opened
       const token = localStorage.getItem('nebula_token');
       try {
-        await fetch(`http://localhost:5000/api/files/open/${item._id}`, {
+        await fetch(`${API_BASE_URL}/api/files/open/${item._id}`, {
           method: 'PUT',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -389,7 +390,7 @@ export function FileExplorerApp() {
     try {
       const token = localStorage.getItem('nebula_token');
       await Promise.all(selectedIds.map(id => 
-        fetch(`http://localhost:5000/api/files/${id}`, {
+        fetch(`${API_BASE_URL}/api/files/${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         })

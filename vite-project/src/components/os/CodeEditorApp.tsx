@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Editor, { useMonaco } from '@monaco-editor/react';
 import { 
@@ -110,7 +111,7 @@ export function CodeEditorApp() {
   const fetchFiles = useCallback(async () => {
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch('http://localhost:5000/api/files/', {
+      const response = await fetch(`${API_BASE_URL}/api/files/`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
@@ -227,7 +228,7 @@ export function CodeEditorApp() {
     const activeContent = editorContents[activeFileId] || '';
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch(`http://localhost:5000/api/files/content/${activeFileId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/files/content/${activeFileId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -259,7 +260,7 @@ export function CodeEditorApp() {
       if (editorContents[activeFile._id] !== activeFile.content) {
          await handleSave();
       }
-      const url = `http://localhost:5000/api/files/serve/${activeFile.parentFolder || 'root'}/${activeFile.name}`;
+      const url = `${API_BASE_URL}/api/files/serve/${activeFile.parentFolder || 'root'}/${activeFile.name}`;
       window.dispatchEvent(new CustomEvent('nebula_open_browser_intent', { detail: { url } }));
       return;
     }
@@ -286,7 +287,7 @@ export function CodeEditorApp() {
     try {
       const contentToRun = editorContents[activeFile._id] || activeFile.content || '';
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch('http://localhost:5000/api/files/run', {
+      const response = await fetch(`${API_BASE_URL}/api/files/run`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

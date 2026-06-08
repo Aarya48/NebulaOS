@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@/lib/config';
 import React, { useEffect, useState, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 
@@ -14,7 +15,7 @@ export const MultiplayerCursors: React.FC = () => {
 
   useEffect(() => {
     // Connect to the backend
-    const socket = io('http://localhost:5000');
+    const socket = io(`${API_BASE_URL}`);
     socketRef.current = socket;
 
     socket.on('cursor-move', (data: CursorData) => {

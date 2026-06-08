@@ -81,6 +81,18 @@ export function FileExplorerApp() {
     fetchFiles();
   }, [fetchFiles]);
 
+  useEffect(() => {
+    const handleUpdate = () => fetchFiles();
+    window.addEventListener('nebula_fs_update', handleUpdate);
+    return () => window.removeEventListener('nebula_fs_update', handleUpdate);
+  }, [fetchFiles]);
+
+  useEffect(() => {
+    const handleOpen = (e: any) => navigateToFolder(e.detail.id, e.detail.name);
+    window.addEventListener('nebula_fs_open', handleOpen as any);
+    return () => window.removeEventListener('nebula_fs_open', handleOpen as any);
+  }, []);
+
   // Click outside to close context menu
   useEffect(() => {
     const handleClickOutside = () => setContextMenu(null);
@@ -103,7 +115,10 @@ export function FileExplorerApp() {
         body: JSON.stringify({ name, parentFolder: currentFolder })
       });
       const data = await response.json();
-      if (data.success) fetchFiles();
+      if (data.success) {
+        fetchFiles();
+        window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+      }
       else alert(data.message);
     } catch (err) {
       alert('Failed to create folder');
@@ -125,7 +140,10 @@ export function FileExplorerApp() {
         body: JSON.stringify({ name, content: '', parentFolder: currentFolder })
       });
       const data = await response.json();
-      if (data.success) fetchFiles();
+      if (data.success) {
+        fetchFiles();
+        window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+      }
       else alert(data.message);
     } catch (err) {
       alert('Failed to create file');
@@ -141,7 +159,10 @@ export function FileExplorerApp() {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
-      if (data.success) fetchFiles();
+      if (data.success) {
+        fetchFiles();
+        window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+      }
       else alert(data.message);
     } catch (err) {
       alert('Failed to delete item');
@@ -163,7 +184,10 @@ export function FileExplorerApp() {
         body: JSON.stringify({ name })
       });
       const data = await response.json();
-      if (data.success) fetchFiles();
+      if (data.success) {
+        fetchFiles();
+        window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+      }
       else alert(data.message);
     } catch (err) {
       alert('Failed to rename item');
@@ -178,7 +202,10 @@ export function FileExplorerApp() {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await response.json();
-      if (data.success) fetchFiles();
+      if (data.success) {
+        fetchFiles();
+        window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+      }
     } catch (err) {
       console.error(err);
     }

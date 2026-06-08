@@ -7,6 +7,7 @@ import { AppWindow } from '@/components/os/AppWindow';
 import { Taskbar } from '@/components/os/Taskbar';
 import { TerminalApp } from '@/components/os/TerminalApp';
 import { FileExplorerApp } from '@/components/os/FileExplorerApp';
+import { DesktopIcons } from '@/components/os/DesktopIcons';
 import { 
   FolderOpen, 
   Terminal as TerminalIcon, 
@@ -220,6 +221,9 @@ export default function OSPage() {
         {/* Subtle geometric grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_30%,transparent_100%)] pointer-events-none"></div>
         
+        {/* Desktop Icons */}
+        <DesktopIcons onOpenFolder={() => handleOpenWindow('files', 'File Explorer')} />
+
         {/* Window Manager Area */}
         <div className="absolute inset-0 z-10 pointer-events-none">
           {windows.map(win => (

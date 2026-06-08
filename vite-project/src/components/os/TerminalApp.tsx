@@ -112,7 +112,10 @@ export function TerminalApp() {
                body: JSON.stringify({ name: target, content: '', parentFolder: currentFolderId })
              });
              const data = await res.json();
-             if (data.success) newLines.push({ type: 'output', content: `Created file: ${target}` });
+             if (data.success) {
+               newLines.push({ type: 'output', content: `Created file: ${target}` });
+               window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+             }
              else newLines.push({ type: 'error', content: data.message });
            }
         } else if (mainCmd === 'nest') {
@@ -126,7 +129,10 @@ export function TerminalApp() {
                body: JSON.stringify({ name: target, parentFolder: currentFolderId })
              });
              const data = await res.json();
-             if (data.success) newLines.push({ type: 'output', content: `Created folder: ${target}` });
+             if (data.success) {
+               newLines.push({ type: 'output', content: `Created folder: ${target}` });
+               window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+             }
              else newLines.push({ type: 'error', content: data.message });
            }
         } else if (mainCmd === 'blackhole') {
@@ -148,7 +154,10 @@ export function TerminalApp() {
                  headers: { 'Authorization': `Bearer ${token}` }
                });
                const data = await res.json();
-               if (data.success) newLines.push({ type: 'output', content: isPermanent ? `Permanently deleted ${target}.` : `Moved ${target} to blackhole.` });
+               if (data.success) {
+                 newLines.push({ type: 'output', content: isPermanent ? `Permanently deleted ${target}.` : `Moved ${target} to blackhole.` });
+                 window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+               }
                else newLines.push({ type: 'error', content: data.message });
              }
            }

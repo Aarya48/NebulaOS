@@ -171,7 +171,10 @@ export default function OSPage() {
   };
 
   return (
-    <div style={{ width: '100vw', height: '100vh', position: 'relative', margin: '0 auto', overflow: 'hidden' }}>
+    <div 
+      style={{ width: '100vw', height: '100vh', position: 'relative', margin: '0 auto', overflow: 'hidden' }}
+      onContextMenu={(e) => e.preventDefault()}
+    >
       
       {/* Top OS Navbar Placeholder */}
       <nav className="absolute top-0 inset-x-0 h-16 z-50 flex items-center justify-between px-8 bg-[#05010A]/80 backdrop-blur-md border-b border-white/5 shadow-md">

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Folder, 
   FileText, 
@@ -43,8 +44,9 @@ export function FileExplorerApp() {
   // Sidebar navigation state
   const [currentView, setCurrentView] = useState<'files' | 'favorites' | 'recent' | 'desktop'>('files');
 
-  // Context Menu state
-  const [contextMenu, setContextMenu] = useState<{ id: string, x: number, y: number } | null>(null);
+  // Selection and Context Menu state
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [contextMenu, setContextMenu] = useState<{ type: 'item' | 'empty', id?: string, x: number, y: number } | null>(null);
 
   // Dialog State
   type DialogConfig = {
@@ -345,14 +347,64 @@ export function FileExplorerApp() {
     }
   };
 
-  const handleContextMenu = (e: React.MouseEvent, id: string) => {
+  const handleItemContextMenu = (e: React.MouseEvent, id: string) => {
     e.preventDefault();
     e.stopPropagation();
-    setContextMenu({ id, x: e.clientX, y: e.clientY });
+    
+    if (!selectedIds.includes(id)) {
+      setSelectedIds([id]);
+    }
+    
+    setContextMenu({ type: 'item', id, x: e.clientX, y: e.clientY });
+  };
+
+  const handleEmptyContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedIds([]);
+    setContextMenu({ type: 'empty', x: e.clientX, y: e.clientY });
+  };
+
+  const handleItemClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setContextMenu(null);
+    if (e.ctrlKey || e.metaKey) {
+      setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    } else {
+      setSelectedIds([id]);
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedIds.length === 0) return;
+    
+    const desktopSelected = files.find(f => selectedIds.includes(f._id) && f.name === 'Desktop' && f.parentFolder === null);
+    if (desktopSelected) {
+      await showAlert('Access Denied', "Cannot delete the system Desktop folder.");
+      return;
+    }
+    
+    if (!(await showConfirm('Delete Items', `Are you sure you want to move ${selectedIds.length} item(s) to the trash?`))) return;
+    
+    try {
+      const token = localStorage.getItem('nebula_token');
+      await Promise.all(selectedIds.map(id => 
+        fetch(`http://localhost:5000/api/files/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      ));
+      
+      setSelectedIds([]);
+      fetchFiles();
+      window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+    } catch (err) {
+      await showAlert('Error', 'Failed to delete items');
+    }
   };
 
   return (
-    <div className="w-full h-full flex bg-[#05010A]/80 text-white font-sans text-sm" onClick={() => setContextMenu(null)}>
+    <div className="w-full h-full flex bg-[#05010A]/80 text-white font-sans text-sm" onClick={() => { setContextMenu(null); setSelectedIds([]); }}>
       {/* Sidebar */}
       <div className="w-48 bg-white/5 border-r border-white/10 p-4 flex flex-col space-y-2 shrink-0">
         <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2 px-2">Locations</div>
@@ -436,7 +488,7 @@ export function FileExplorerApp() {
         </div>
 
         {/* Grid View */}
-        <div className="flex-1 overflow-y-auto p-6 relative">
+        <div className="flex-1 overflow-y-auto p-6 relative" onContextMenu={handleEmptyContextMenu}>
           {isLoading && files.length === 0 ? (
             <div className="absolute inset-0 flex items-center justify-center text-gray-500">Loading...</div>
           ) : error ? (
@@ -457,9 +509,13 @@ export function FileExplorerApp() {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       key={file._id}
-                      className="flex flex-col items-center p-3 rounded-xl hover:bg-white/10 transition-colors w-full cursor-pointer group relative"
+                      className={cn(
+                        "flex flex-col items-center p-3 rounded-xl transition-colors w-full cursor-pointer group relative",
+                        selectedIds.includes(file._id) ? "bg-cyan-500/20 ring-1 ring-cyan-500/50" : "hover:bg-white/10"
+                      )}
+                      onClick={(e) => handleItemClick(e, file._id)}
                       onDoubleClick={() => handleItemDoubleClick(file)}
-                      onContextMenu={(e) => handleContextMenu(e, file._id)}
+                      onContextMenu={(e) => handleItemContextMenu(e, file._id)}
                     >
                       <div className="relative mb-3">
                         {file.type === 'folder' ? (
@@ -480,32 +536,68 @@ export function FileExplorerApp() {
           )}
 
           {/* Context Menu overlay */}
-          {contextMenu && (
+          {contextMenu && createPortal(
             <div 
-              className="fixed bg-[#120a1c] border border-white/10 rounded-xl shadow-2xl py-2 z-50 min-w-[160px] backdrop-blur-xl"
+              className="fixed bg-[#120a1c] border border-white/10 rounded-xl shadow-2xl py-2 z-[99999] min-w-[160px] backdrop-blur-xl"
               style={{ left: contextMenu.x, top: contextMenu.y }}
               onClick={(e) => e.stopPropagation()}
+              onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}
             >
-              <button 
-                className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center space-x-2 text-gray-300 hover:text-white"
-                onClick={() => { handleRename(contextMenu.id, files.find(f => f._id === contextMenu.id)?.name || ''); setContextMenu(null); }}
-              >
-                <Edit2 className="w-4 h-4" /> <span>Rename</span>
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center space-x-2 text-gray-300 hover:text-white"
-                onClick={() => { handleToggleFavorite(contextMenu.id); setContextMenu(null); }}
-              >
-                <Star className="w-4 h-4" /> <span>Toggle Favorite</span>
-              </button>
-              <div className="h-px bg-white/10 my-1"></div>
-              <button 
-                className="w-full text-left px-4 py-2 hover:bg-red-500/20 flex items-center space-x-2 text-red-400"
-                onClick={() => { handleDelete(contextMenu.id); setContextMenu(null); }}
-              >
-                <Trash2 className="w-4 h-4" /> <span>Move to Trash</span>
-              </button>
-            </div>
+              {contextMenu.type === 'item' ? (
+                <>
+                  {selectedIds.length === 1 && (
+                    <button 
+                      className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center space-x-2 text-gray-300 hover:text-white"
+                      onClick={() => { handleRename(selectedIds[0], files.find(f => f._id === selectedIds[0])?.name || ''); setContextMenu(null); }}
+                    >
+                      <Edit2 className="w-4 h-4" /> <span>Rename</span>
+                    </button>
+                  )}
+                  {selectedIds.length === 1 && (
+                    <button 
+                      className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center space-x-2 text-gray-300 hover:text-white"
+                      onClick={() => { handleToggleFavorite(selectedIds[0]); setContextMenu(null); }}
+                    >
+                      <Star className="w-4 h-4" /> <span>Toggle Favorite</span>
+                    </button>
+                  )}
+                  {selectedIds.length > 0 && (
+                    <>
+                      <div className="h-px bg-white/10 my-1"></div>
+                      <button 
+                        className="w-full text-left px-4 py-2 hover:bg-red-500/20 flex items-center space-x-2 text-red-400"
+                        onClick={() => { handleDeleteSelected(); setContextMenu(null); }}
+                      >
+                        <Trash2 className="w-4 h-4" /> <span>Delete Selected ({selectedIds.length})</span>
+                      </button>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <button 
+                    className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center space-x-2 text-gray-300 hover:text-white"
+                    onClick={() => { handleCreateFolder(); setContextMenu(null); }}
+                  >
+                    <FolderPlus className="w-4 h-4" /> <span>New Folder</span>
+                  </button>
+                  <button 
+                    className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center space-x-2 text-gray-300 hover:text-white"
+                    onClick={() => { handleCreateFile(); setContextMenu(null); }}
+                  >
+                    <FilePlus className="w-4 h-4" /> <span>New File</span>
+                  </button>
+                  <div className="h-px bg-white/10 my-1"></div>
+                  <button 
+                    className="w-full text-left px-4 py-2 hover:bg-white/10 flex items-center space-x-2 text-gray-300 hover:text-white"
+                    onClick={() => { fetchFiles(); setContextMenu(null); }}
+                  >
+                    <RefreshCw className="w-4 h-4" /> <span>Refresh</span>
+                  </button>
+                </>
+              )}
+            </div>,
+            document.body
           )}
         </div>
       </div>

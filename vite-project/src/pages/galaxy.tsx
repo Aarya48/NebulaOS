@@ -2,8 +2,10 @@ import { StarsBackground } from '@/components/animate-ui/components/backgrounds/
 import { LiquidButton } from '@/components/animate-ui/components/buttons/liquid';
 import { cn } from '@/lib/utils';
 import { Layout, Cpu, FolderTree, Terminal } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function GalaxyPage() {
+  const navigate = useNavigate();
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', margin: '0 auto', overflow: 'hidden' }}>
 
@@ -23,7 +25,10 @@ export default function GalaxyPage() {
         </div>
 
         <div className="flex items-center">
-          <button className="text-xs tracking-widest uppercase font-semibold text-black bg-white hover:bg-gray-200 px-8 py-3 rounded-none transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]">
+          <button 
+            onClick={() => navigate('/auth')}
+            className="text-xs tracking-widest uppercase font-semibold text-black bg-white hover:bg-gray-200 px-8 py-3 rounded-none transition-all shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+          >
             Launch App
           </button>
         </div>
@@ -52,12 +57,14 @@ export default function GalaxyPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-6 pt-4">
-              <LiquidButton
-                size="lg"
-                className="w-64 h-16 text-sm tracking-[0.2em] uppercase font-bold rounded-none border border-cyan-500/50 [--liquid-button-background-color:rgba(6,182,212,0.1)] [--liquid-button-color:#06b6d4] text-cyan-300 hover:text-black shadow-[0_0_20px_rgba(6,182,212,0.2)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] transition-all"
-              >
-                Initiate
-              </LiquidButton>
+              <div onClick={() => navigate('/auth')}>
+                <LiquidButton
+                  size="lg"
+                  className="w-64 h-16 text-sm tracking-[0.2em] uppercase font-bold rounded-none border border-cyan-500/50 [--liquid-button-background-color:rgba(6,182,212,0.1)] [--liquid-button-color:#06b6d4] text-cyan-300 hover:text-black shadow-[0_0_20px_rgba(6,182,212,0.2)] hover:shadow-[0_0_40px_rgba(6,182,212,0.6)] transition-all"
+                >
+                  Initiate
+                </LiquidButton>
+              </div>
               <LiquidButton
                 size="lg"
                 className="w-64 h-16 text-sm tracking-[0.2em] uppercase font-bold rounded-none border border-fuchsia-500/30 [--liquid-button-background-color:transparent] [--liquid-button-color:rgba(217,70,239,0.2)] text-fuchsia-300/80 hover:text-white hover:border-fuchsia-500/80 shadow-[0_0_15px_rgba(217,70,239,0.1)] hover:shadow-[0_0_30px_rgba(217,70,239,0.4)] transition-all"

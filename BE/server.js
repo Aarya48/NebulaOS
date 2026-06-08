@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const fileRoutes=require('./routes/fileRoutes');
 const http=require('http');
+const cors = require('cors');
 const app = express();
 const server = http.createServer(app);
 const { Server } = require("socket.io");
@@ -13,6 +14,7 @@ const initializeSocket= require ("./sockets/cursorSocket")
 
 connectDB();
 
+app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {

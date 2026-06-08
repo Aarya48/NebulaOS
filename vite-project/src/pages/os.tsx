@@ -11,6 +11,7 @@ import { FileExplorerApp } from '@/components/os/FileExplorerApp';
 import { DesktopIcons } from '@/components/os/DesktopIcons';
 import { TrashApp } from '@/components/os/TrashApp';
 import { CodeEditorApp } from '@/components/os/CodeEditorApp';
+import { BrowserApp } from '@/components/os/BrowserApp';
 import { 
   FolderOpen, 
   Terminal as TerminalIcon, 
@@ -23,7 +24,8 @@ import {
   BatteryLow,
   LogOut,
   Eclipse,
-  Code2
+  Code2,
+  Globe
 } from 'lucide-react';
 
 export default function OSPage() {
@@ -187,6 +189,10 @@ export default function OSPage() {
               <Code2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Editor</span>
             </button>
+            <button onClick={() => handleOpenWindow('browser', 'Nebula Search')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-blue-400 transition-colors group">
+              <Globe className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span className="uppercase tracking-widest">Browser</span>
+            </button>
             <button onClick={() => handleOpenWindow('blackhole', 'Blackhole')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-red-400 transition-colors group">
               <Eclipse className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Blackhole</span>
@@ -280,6 +286,7 @@ export default function OSPage() {
                   {win.type === 'files' && <FileExplorerApp />}
                   {win.type === 'blackhole' && <TrashApp />}
                   {win.type === 'editor' && <CodeEditorApp />}
+                  {win.type === 'browser' && <BrowserApp />}
                 </AppWindow>
               </motion.div>
             ))}

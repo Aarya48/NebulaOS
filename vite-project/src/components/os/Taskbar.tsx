@@ -1,11 +1,19 @@
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
-import { Terminal, FolderOpen, Eclipse, Code2 } from 'lucide-react';
+import { Terminal, FolderOpen, Eclipse, Code2, Globe } from 'lucide-react';
 
 export interface TaskbarProps {
   windows: Array<{ id: string; type: string; title: string; isMinimized: boolean; isActive: boolean }>;
   onWindowClick: (id: string) => void;
 }
+
+const WINDOW_TYPES = {
+  terminal: { icon: Terminal, color: 'text-green-400' },
+  files: { icon: FolderOpen, color: 'text-cyan-400' },
+  blackhole: { icon: Eclipse, color: 'text-red-400' },
+  editor: { icon: Code2, color: 'text-yellow-400' },
+  browser: { icon: Globe, color: 'text-blue-400' }
+};
 
 export function Taskbar({ windows, onWindowClick }: TaskbarProps) {
   if (windows.length === 0) return null;
@@ -18,7 +26,8 @@ export function Taskbar({ windows, onWindowClick }: TaskbarProps) {
         className="pointer-events-auto flex items-center space-x-2 bg-[#05010A]/80 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.5)]"
       >
         {windows.map((win) => {
-          const Icon = win.type === 'terminal' ? Terminal : win.type === 'blackhole' ? Eclipse : win.type === 'editor' ? Code2 : FolderOpen;
+          const config = WINDOW_TYPES[win.type as keyof typeof WINDOW_TYPES] || WINDOW_TYPES.files;
+          const Icon = config.icon;
           return (
             <button
               key={win.id}
@@ -32,7 +41,7 @@ export function Taskbar({ windows, onWindowClick }: TaskbarProps) {
               <Icon 
                 className={cn(
                   "w-6 h-6 transition-colors",
-                  win.type === 'terminal' ? "text-green-400" : win.type === 'blackhole' ? "text-red-500" : win.type === 'editor' ? "text-yellow-400" : "text-cyan-400" 
+                  config.color
                 )}
               />
               

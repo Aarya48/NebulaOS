@@ -61,6 +61,7 @@ export function TerminalApp() {
              { type: 'output', content: '  go ..                : Navigate up one directory level' },
              { type: 'output', content: '  new <file>           : Create a new file (e.g., new doc.txt)' },
              { type: 'output', content: '  nest <folder>        : Create a new folder (e.g., nest Projects)' },
+             { type: 'output', content: '  rename <old> <new>   : Rename a file or folder (use quotes for spaces)' },
              { type: 'output', content: '  blackhole <item>     : Move a file or folder to the trash bin' },
              { type: 'output', content: '  blackhole -p <item>  : Permanently delete a file or folder' },
              { type: 'output', content: '  bin                  : List all items currently in the trash bin' },
@@ -134,6 +135,34 @@ export function TerminalApp() {
                window.dispatchEvent(new CustomEvent('nebula_fs_update'));
              }
              else newLines.push({ type: 'error', content: data.message });
+           }
+        } else if (mainCmd === 'rename') {
+           const matches = cmd.match(/(?:[^\s"]+|"[^"]*")+/g);
+           if (!matches || matches.length < 3) {
+             newLines.push({ type: 'error', content: 'Usage: rename <oldName> <newName> (use quotes if names contain spaces)' });
+           } else {
+             const oldName = matches[1].replace(/"/g, '');
+             const newName = matches[2].replace(/"/g, '');
+             const files = await fetchCurrentContents();
+             const item = files.find((f: any) => f.name.toLowerCase() === oldName.toLowerCase());
+             if (!item) {
+               newLines.push({ type: 'error', content: `'${oldName}' not found.` });
+             } else if (item.name === 'Desktop' && item.parentFolder === null) {
+               newLines.push({ type: 'error', content: 'Cannot rename the system Desktop folder.' });
+             } else {
+               const res = await fetch(`http://localhost:5000/api/files/${item._id}`, {
+                 method: 'PUT',
+                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                 body: JSON.stringify({ name: newName })
+               });
+               const data = await res.json();
+               if (data.success) {
+                 newLines.push({ type: 'output', content: `Renamed '${item.name}' to '${newName}'` });
+                 window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+               } else {
+                 newLines.push({ type: 'error', content: data.message });
+               }
+             }
            }
         } else if (mainCmd === 'blackhole') {
            const isPermanent = args[1] === '-p';

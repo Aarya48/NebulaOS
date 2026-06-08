@@ -12,6 +12,16 @@ const updateWallpaper = async (req, res) => {
       });
     }
 
+    if (req.body.reset === 'true') {
+      user.wallpaper = '/wallpapers/default.jpg';
+      await user.save();
+      return res.status(200).json({
+        success: true,
+        message: "Wallpaper reset successfully",
+        wallpaper: user.wallpaper,
+      });
+    }
+
     if (!req.file) {
       return res.status(400).json({
         success: false,

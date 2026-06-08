@@ -45,6 +45,50 @@ export function FileExplorerApp() {
   // Context Menu state
   const [contextMenu, setContextMenu] = useState<{ id: string, x: number, y: number } | null>(null);
 
+  // Dialog State
+  type DialogConfig = {
+    isOpen: boolean;
+    type: 'alert' | 'confirm' | 'prompt';
+    title: string;
+    message: string;
+    defaultValue?: string;
+    onConfirm?: (value?: string) => void;
+    onCancel?: () => void;
+  };
+  const [dialog, setDialog] = useState<DialogConfig>({ isOpen: false, type: 'alert', title: '', message: '' });
+  const [promptValue, setPromptValue] = useState('');
+
+  const showPrompt = (title: string, message: string, defaultValue = ''): Promise<string | null> => {
+    return new Promise((resolve) => {
+      setPromptValue(defaultValue);
+      setDialog({
+        isOpen: true, type: 'prompt', title, message, defaultValue,
+        onConfirm: (val) => { setDialog(prev => ({ ...prev, isOpen: false })); resolve(val || null); },
+        onCancel: () => { setDialog(prev => ({ ...prev, isOpen: false })); resolve(null); }
+      });
+    });
+  };
+
+  const showConfirm = (title: string, message: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      setDialog({
+        isOpen: true, type: 'confirm', title, message,
+        onConfirm: () => { setDialog(prev => ({ ...prev, isOpen: false })); resolve(true); },
+        onCancel: () => { setDialog(prev => ({ ...prev, isOpen: false })); resolve(false); }
+      });
+    });
+  };
+
+  const showAlert = (title: string, message: string): Promise<void> => {
+    return new Promise((resolve) => {
+      setDialog({
+        isOpen: true, type: 'alert', title, message,
+        onConfirm: () => { setDialog(prev => ({ ...prev, isOpen: false })); resolve(); },
+        onCancel: () => { setDialog(prev => ({ ...prev, isOpen: false })); resolve(); }
+      });
+    });
+  };
+
   const fetchFiles = useCallback(async () => {
     setIsLoading(true);
     setError('');
@@ -101,7 +145,7 @@ export function FileExplorerApp() {
   }, []);
 
   const handleCreateFolder = async () => {
-    const name = prompt('Enter folder name:');
+    const name = await showPrompt('New Folder', 'Enter folder name:');
     if (!name) return;
 
     try {
@@ -119,14 +163,14 @@ export function FileExplorerApp() {
         fetchFiles();
         window.dispatchEvent(new CustomEvent('nebula_fs_update'));
       }
-      else alert(data.message);
+      else await showAlert('Error', data.message);
     } catch (err) {
-      alert('Failed to create folder');
+      await showAlert('Error', 'Failed to create folder');
     }
   };
 
   const handleCreateFile = async () => {
-    const name = prompt('Enter file name (e.g. document.txt):');
+    const name = await showPrompt('New File', 'Enter file name (e.g. document.txt):');
     if (!name) return;
 
     try {
@@ -144,19 +188,19 @@ export function FileExplorerApp() {
         fetchFiles();
         window.dispatchEvent(new CustomEvent('nebula_fs_update'));
       }
-      else alert(data.message);
+      else await showAlert('Error', data.message);
     } catch (err) {
-      alert('Failed to create file');
+      await showAlert('Error', 'Failed to create file');
     }
   };
 
   const handleDelete = async (id: string) => {
     const item = files.find(f => f._id === id);
     if (item?.name === 'Desktop' && item?.parentFolder === null) {
-      alert("Cannot delete the system Desktop folder.");
+      await showAlert('Access Denied', "Cannot delete the system Desktop folder.");
       return;
     }
-    if (!confirm('Are you sure you want to delete this item?')) return;
+    if (!(await showConfirm('Delete Item', 'Are you sure you want to move this item to the trash?'))) return;
     try {
       const token = localStorage.getItem('nebula_token');
       const response = await fetch(`http://localhost:5000/api/files/${id}`, {
@@ -168,20 +212,20 @@ export function FileExplorerApp() {
         fetchFiles();
         window.dispatchEvent(new CustomEvent('nebula_fs_update'));
       }
-      else alert(data.message);
+      else await showAlert('Error', data.message);
     } catch (err) {
-      alert('Failed to delete item');
+      await showAlert('Error', 'Failed to delete item');
     }
   };
 
   const handleRename = async (id: string, currentName: string) => {
     const item = files.find(f => f._id === id);
     if (item?.name === 'Desktop' && item?.parentFolder === null) {
-      alert("Cannot rename the system Desktop folder.");
+      await showAlert('Access Denied', "Cannot rename the system Desktop folder.");
       return;
     }
 
-    const name = prompt('Enter new name:', currentName);
+    const name = await showPrompt('Rename', 'Enter new name:', currentName);
     if (!name || name === currentName) return;
 
     try {
@@ -199,9 +243,9 @@ export function FileExplorerApp() {
         fetchFiles();
         window.dispatchEvent(new CustomEvent('nebula_fs_update'));
       }
-      else alert(data.message);
+      else await showAlert('Error', data.message);
     } catch (err) {
-      alert('Failed to rename item');
+      await showAlert('Error', 'Failed to rename item');
     }
   };
 
@@ -282,12 +326,11 @@ export function FileExplorerApp() {
     }
   };
 
-  const handleItemDoubleClick = (item: FileItem) => {
+  const handleItemDoubleClick = async (item: FileItem) => {
     if (item.type === 'folder') {
       navigateToFolder(item._id, item.name);
     } else {
-      // For now, just alert or we can build a text editor later
-      alert(`Opening file: ${item.name}\n\nContent:\n${item.content || '(Empty)'}`);
+      await showAlert(`Opening: ${item.name}`, `Content:\n\n${item.content || '(Empty)'}`);
       
       // Mark as opened
       const token = localStorage.getItem('nebula_token');
@@ -453,12 +496,58 @@ export function FileExplorerApp() {
                 className="w-full text-left px-4 py-2 hover:bg-red-500/20 flex items-center space-x-2 text-red-400"
                 onClick={() => { handleDelete(contextMenu.id); setContextMenu(null); }}
               >
-                <Trash2 className="w-4 h-4" /> <span>Delete</span>
+                <Trash2 className="w-4 h-4" /> <span>Move to Trash</span>
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Dialog Modal overlay */}
+      <AnimatePresence>
+        {dialog.isOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-[#120a1c] border border-white/20 rounded-xl shadow-2xl p-6 max-w-sm w-full flex flex-col space-y-4"
+            >
+              <h2 className="text-lg font-bold text-white">{dialog.title}</h2>
+              <p className="text-sm text-gray-300 whitespace-pre-wrap">{dialog.message}</p>
+              
+              {dialog.type === 'prompt' && (
+                <input 
+                  type="text" 
+                  autoFocus
+                  className="w-full bg-black/50 border border-white/10 rounded-md p-2 text-white outline-none focus:border-cyan-500 transition-colors"
+                  value={promptValue}
+                  onChange={(e) => setPromptValue(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && dialog.onConfirm?.(promptValue)}
+                />
+              )}
+
+              <div className="flex justify-end space-x-3 pt-2">
+                {dialog.type !== 'alert' && (
+                  <button 
+                    onClick={dialog.onCancel}
+                    className="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-md transition-colors"
+                  >
+                    Cancel
+                  </button>
+                )}
+                <button 
+                  onClick={() => dialog.onConfirm?.(dialog.type === 'prompt' ? promptValue : undefined)}
+                  className="px-4 py-2 text-sm bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30 rounded-md transition-colors font-medium"
+                >
+                  OK
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

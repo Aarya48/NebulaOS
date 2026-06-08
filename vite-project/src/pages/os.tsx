@@ -8,6 +8,7 @@ import { Taskbar } from '@/components/os/Taskbar';
 import { TerminalApp } from '@/components/os/TerminalApp';
 import { FileExplorerApp } from '@/components/os/FileExplorerApp';
 import { DesktopIcons } from '@/components/os/DesktopIcons';
+import { TrashApp } from '@/components/os/TrashApp';
 import { 
   FolderOpen, 
   Terminal as TerminalIcon, 
@@ -18,7 +19,8 @@ import {
   BatteryFull, 
   BatteryMedium,
   BatteryLow,
-  LogOut 
+  LogOut,
+  Eclipse
 } from 'lucide-react';
 
 export default function OSPage() {
@@ -163,6 +165,10 @@ export default function OSPage() {
               <TerminalIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Terminal</span>
             </button>
+            <button onClick={() => handleOpenWindow('blackhole', 'Blackhole')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-red-400 transition-colors group">
+              <Eclipse className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              <span className="uppercase tracking-widest">Blackhole</span>
+            </button>
             <button className="flex items-center space-x-2 text-sm text-gray-400 hover:text-white transition-colors group">
               <Settings className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Settings</span>
@@ -242,6 +248,7 @@ export default function OSPage() {
               >
                 {win.type === 'terminal' && <TerminalApp />}
                 {win.type === 'files' && <FileExplorerApp />}
+                {win.type === 'blackhole' && <TrashApp />}
               </AppWindow>
             </div>
           ))}

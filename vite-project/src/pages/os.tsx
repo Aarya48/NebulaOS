@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { StarsBackground } from '@/components/animate-ui/components/backgrounds/stars';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { AppWindow } from '@/components/os/AppWindow';
+import { Taskbar } from '@/components/os/Taskbar';
+import { TerminalApp } from '@/components/os/TerminalApp';
 import { 
   FolderOpen, 
   Terminal as TerminalIcon, 
@@ -21,6 +24,81 @@ export default function OSPage() {
 
   const [time, setTime] = useState(new Date());
   const [battery, setBattery] = useState<{ level: number, charging: boolean } | null>(null);
+  
+  // Window Management State
+  const [windows, setWindows] = useState<any[]>([]);
+
+  const handleOpenWindow = (type: string, title: string) => {
+    setWindows(prev => {
+      const existing = prev.find(w => w.type === type);
+      if (existing) {
+        return prev.map(w => 
+          w.id === existing.id 
+            ? { ...w, isMinimized: false, isActive: true, zIndex: Math.max(...prev.map(p => p.zIndex), 0) + 1 }
+            : { ...w, isActive: false }
+        );
+      }
+      
+      const newWindow = {
+        id: `${type}-${Date.now()}`,
+        type,
+        title,
+        isMinimized: false,
+        isMaximized: false,
+        isActive: true,
+        zIndex: Math.max(...prev.map(p => p.zIndex), 0) + 1
+      };
+      return [...prev.map(w => ({ ...w, isActive: false })), newWindow];
+    });
+  };
+
+  const handleCloseWindow = (id: string) => {
+    setWindows(prev => prev.filter(w => w.id !== id));
+  };
+
+  const handleMinimizeWindow = (id: string) => {
+    setWindows(prev => prev.map(w => w.id === id ? { ...w, isMinimized: true, isActive: false } : w));
+  };
+
+  const handleMaximizeWindow = (id: string) => {
+    setWindows(prev => prev.map(w => w.id === id ? { ...w, isMaximized: !w.isMaximized } : w));
+  };
+
+  const handleFocusWindow = (id: string) => {
+    setWindows(prev => {
+      const highestZ = Math.max(...prev.map(p => p.zIndex), 0);
+      return prev.map(w => 
+        w.id === id 
+          ? { ...w, isActive: true, zIndex: highestZ + 1 }
+          : { ...w, isActive: false }
+      );
+    });
+  };
+
+  const handleTaskbarClick = (id: string) => {
+    setWindows(prev => {
+      const win = prev.find(w => w.id === id);
+      if (!win) return prev;
+      
+      if (win.isMinimized) {
+        const highestZ = Math.max(...prev.map(p => p.zIndex), 0);
+        return prev.map(w => 
+          w.id === id 
+            ? { ...w, isMinimized: false, isActive: true, zIndex: highestZ + 1 }
+            : { ...w, isActive: false }
+        );
+      } else if (win.isActive) {
+        return prev.map(w => w.id === id ? { ...w, isMinimized: true, isActive: false } : w);
+      } else {
+        const highestZ = Math.max(...prev.map(p => p.zIndex), 0);
+        return prev.map(w => 
+          w.id === id 
+            ? { ...w, isActive: true, zIndex: highestZ + 1 }
+            : { ...w, isActive: false }
+        );
+      }
+    });
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -75,11 +153,11 @@ export default function OSPage() {
 
           {/* Nav Links */}
           <div className="hidden md:flex items-center space-x-6">
-            <button className="flex items-center space-x-2 text-sm text-gray-400 hover:text-cyan-400 transition-colors group">
+            <button onClick={() => handleOpenWindow('files', 'File Explorer')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-cyan-400 transition-colors group">
               <FolderOpen className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Files</span>
             </button>
-            <button className="flex items-center space-x-2 text-sm text-gray-400 hover:text-fuchsia-400 transition-colors group">
+            <button onClick={() => handleOpenWindow('terminal', 'Terminal')} className="flex items-center space-x-2 text-sm text-gray-400 hover:text-fuchsia-400 transition-colors group">
               <TerminalIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
               <span className="uppercase tracking-widest">Terminal</span>
             </button>
@@ -141,9 +219,37 @@ export default function OSPage() {
         {/* Subtle geometric grid overlay */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_30%,transparent_100%)] pointer-events-none"></div>
         
-        {/* Main Content Area placeholder removed for clean desktop look */}
-        <div className="relative z-10 w-full h-full flex items-center justify-center">
+        {/* Window Manager Area */}
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          {windows.map(win => (
+            <div key={win.id} className="pointer-events-auto">
+              <AppWindow
+                id={win.id}
+                title={win.title}
+                isMinimized={win.isMinimized}
+                isMaximized={win.isMaximized}
+                isActive={win.isActive}
+                zIndex={win.zIndex}
+                onClose={handleCloseWindow}
+                onMinimize={handleMinimizeWindow}
+                onMaximize={handleMaximizeWindow}
+                onFocus={handleFocusWindow}
+              >
+                {win.type === 'terminal' && <TerminalApp />}
+                {win.type === 'files' && (
+                  <div className="w-full h-full bg-[#0a0514] text-white p-8 flex items-center justify-center">
+                    <div className="flex flex-col items-center opacity-50">
+                      <FolderOpen className="w-16 h-16 mb-4 text-cyan-500" />
+                      <p>File System coming soon...</p>
+                    </div>
+                  </div>
+                )}
+              </AppWindow>
+            </div>
+          ))}
         </div>
+
+        <Taskbar windows={windows} onWindowClick={handleTaskbarClick} />
 
       </StarsBackground>
     </div>

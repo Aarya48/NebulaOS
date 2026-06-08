@@ -58,7 +58,7 @@ function CursorProvider({ children, global = false }: CursorProviderProps) {
       };
 
       const handlePointerOut = (e: PointerEvent | MouseEvent) => {
-        if (e instanceof PointerEvent && e.relatedTarget === null) {
+        if (e.relatedTarget === null) {
           setActive(false);
         }
       };

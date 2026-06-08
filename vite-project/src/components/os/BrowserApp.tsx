@@ -177,7 +177,7 @@ export function BrowserApp() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 relative bg-white">
+      <div className="flex-1 relative bg-white browser-iframe-container">
         {isLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-[#120a1c] z-10">
             <div className="flex flex-col items-center text-blue-400">

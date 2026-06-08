@@ -48,8 +48,21 @@ export default function OSPage() {
         }, 300);
       }
     };
+    const handleOpenBrowserIntent = (e: any) => {
+      const url = e.detail?.url;
+      if (url) {
+        handleOpenWindow('browser', 'Nebula Search');
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('nebula_navigate_browser', { detail: { url } }));
+        }, 300);
+      }
+    };
     window.addEventListener('nebula_open_editor_intent', handleOpenEditorIntent);
-    return () => window.removeEventListener('nebula_open_editor_intent', handleOpenEditorIntent);
+    window.addEventListener('nebula_open_browser_intent', handleOpenBrowserIntent);
+    return () => {
+      window.removeEventListener('nebula_open_editor_intent', handleOpenEditorIntent);
+      window.removeEventListener('nebula_open_browser_intent', handleOpenBrowserIntent);
+    };
   }, []);
 
   const handleOpenWindow = (type: string, title: string) => {

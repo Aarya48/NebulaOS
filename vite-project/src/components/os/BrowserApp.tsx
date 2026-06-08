@@ -1,4 +1,4 @@
-import { useState, useRef, FormEvent } from 'react';
+import { useState, useRef, FormEvent, useEffect } from 'react';
 import { 
   ArrowLeft, 
   ArrowRight, 
@@ -59,6 +59,16 @@ export function BrowserApp() {
       navigateTo(formatted);
     }
   };
+
+  useEffect(() => {
+    const handleNavigate = (e: any) => {
+      if (e.detail?.url) {
+        navigateTo(e.detail.url);
+      }
+    };
+    window.addEventListener('nebula_navigate_browser', handleNavigate);
+    return () => window.removeEventListener('nebula_navigate_browser', handleNavigate);
+  }, [history, historyIndex]);
 
   const handleBack = () => {
     if (historyIndex > 0) {

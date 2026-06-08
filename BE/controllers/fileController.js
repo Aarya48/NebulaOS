@@ -548,6 +548,50 @@ const updateContent = async (req, res) => {
   }
 };
 
+
+
+const serveFile = async (req, res) => {
+  try {
+    const { folderId, filename } = req.params;
+    const parentFolder = folderId === 'root' ? null : folderId;
+    const file = await File.findOne({ parentFolder, name: filename, isDeleted: false });
+    if (!file) {
+      return res.status(404).send('File not found');
+    }
+    const ext = filename.split('.').pop().toLowerCase();
+    const mimeTypes = {
+      'html': 'text/html',
+      'css': 'text/css',
+      'js': 'application/javascript',
+      'json': 'application/json',
+      'txt': 'text/plain'
+    };
+    res.setHeader('Content-Type', mimeTypes[ext] || 'text/plain');
+    res.send(file.content || '');
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+};
+
+exports.serveFile = serveFile;
+
+const runCode = async (req, res) => {
+  try {
+    const { language, files, stdin } = req.body;
+    const response = await fetch('https://onecompiler.com/api/code/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ properties: { language, files, stdin } })
+    });
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ exception: 'Proxy Error: ' + error.message });
+  }
+};
+
+exports.runCode = runCode;
+
 module.exports = {
   createFolder,
   createFile,
@@ -562,8 +606,9 @@ module.exports = {
   getRecentFiles,
   openFile,
   getTrashFiles,
-restoreFile,
-permanentDelete,
-updateContent
+  restoreFile,
+  permanentDelete,
+  updateContent,
+  serveFile,
+  runCode
 };
-

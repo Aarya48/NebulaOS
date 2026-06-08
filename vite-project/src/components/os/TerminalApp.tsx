@@ -13,13 +13,13 @@ export function TerminalApp() {
   ]);
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
   const [breadcrumbs, setBreadcrumbs] = useState<{id: string | null, name: string}[]>([
-    { id: null, name: 'Root' }
+    { id: null, name: 'Home' }
   ]);
   const [input, setInput] = useState('');
   const terminalRef = useRef<HTMLDivElement>(null);
 
   const getPathStr = () => {
-    return 'C:\\NebulaOS\\' + breadcrumbs.map(b => b.name).filter(n => n !== 'Root').join('\\');
+    return breadcrumbs.map(b => b.name).join('\\');
   };
 
   const currentDirStr = getPathStr();

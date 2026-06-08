@@ -34,7 +34,7 @@ export function FileExplorerApp() {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [currentFolder, setCurrentFolder] = useState<string | null>(null);
   const [breadcrumbs, setBreadcrumbs] = useState<{id: string | null, name: string}[]>([
-    { id: null, name: 'Root' }
+    { id: null, name: 'Home' }
   ]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -190,7 +190,7 @@ export function FileExplorerApp() {
     
     // Update breadcrumbs
     if (id === null) {
-      setBreadcrumbs([{ id: null, name: 'Root' }]);
+      setBreadcrumbs([{ id: null, name: 'Home' }]);
     } else {
       const index = breadcrumbs.findIndex(b => b.id === id);
       if (index !== -1) {
@@ -234,7 +234,7 @@ export function FileExplorerApp() {
         // 3. Navigate to it
         if (desktopFolder) {
           setCurrentFolder(desktopFolder._id);
-          setBreadcrumbs([{ id: null, name: 'Root' }, { id: desktopFolder._id, name: 'Desktop' }]);
+          setBreadcrumbs([{ id: null, name: 'Home' }, { id: desktopFolder._id, name: 'Desktop' }]);
         }
       }
     } catch (err) {
@@ -273,7 +273,7 @@ export function FileExplorerApp() {
         <div className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2 px-2">Locations</div>
         
         <button 
-          onClick={() => { setCurrentView('files'); navigateToFolder(null, 'Root'); }}
+          onClick={() => { setCurrentView('files'); navigateToFolder(null, 'Home'); }}
           className={cn("flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors", currentView === 'files' ? "bg-cyan-500/20 text-cyan-400" : "hover:bg-white/5 text-gray-300")}
         >
           <Home className="w-4 h-4" />

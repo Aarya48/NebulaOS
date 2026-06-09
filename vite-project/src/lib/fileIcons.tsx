@@ -7,7 +7,8 @@ import {
   FileVideo, 
   FileArchive, 
   FileTerminal,
-  FilePenLine
+  FilePenLine,
+  FileSpreadsheet
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 

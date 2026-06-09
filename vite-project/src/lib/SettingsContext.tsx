@@ -16,7 +16,6 @@ export type OSPreferences = {
 const defaultPreferences: OSPreferences = {
   taskbarAutoHide: false,
   desktopIconSize: 'medium',
-  searchEngine: 'google',
   windowGlassmorphism: true,
   backgroundDimming: 0,
   cursorGlow: 60,
@@ -130,13 +129,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       const token = localStorage.getItem('nebula_token');
       if (!token) return;
 
-      if (!file) {
-        setWallpaperState('/wallpapers/default.jpg');
-        return;
-      }
-
       const formData = new FormData();
-      formData.append('wallpaper', file);
+      if (file) {
+        formData.append('wallpaper', file);
+      } else {
+        formData.append('reset', 'true');
+        formData.append('wallpaper', new Blob([''], { type: 'image/jpeg' }), 'reset.jpg');
+      }
 
       const res = await fetch(`${API_BASE_URL}/api/users/wallpaper`, {
         method: 'PUT',

@@ -108,33 +108,58 @@ export function CodeEditorApp() {
 
   const monaco = useMonaco();
 
-  const fetchFiles = useCallback(async () => {
+  const syncFileSystem = useCallback(async () => {
     try {
       const token = localStorage.getItem('nebula_token');
-      const response = await fetch(`${API_BASE_URL}/api/files/`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const rootRes = await fetch(`${API_BASE_URL}/api/files/`, { headers: { 'Authorization': `Bearer ${token}` } });
+      const rootData = await rootRes.json();
+      
+      const foldersToFetch = new Set(expandedFolders);
+      if (rootFolderId) foldersToFetch.add(rootFolderId);
+      openFiles.forEach(f => {
+        if (f.parentFolder) foldersToFetch.add(f.parentFolder);
       });
-      const data = await response.json();
-      if (data.success) {
-        setFiles(data.files || []);
-      }
+      
+      const promises = Array.from(foldersToFetch).map(id => 
+        fetch(`${API_BASE_URL}/api/files/folder/${id}`, { headers: { 'Authorization': `Bearer ${token}` } }).then(res => res.json())
+      );
+      const results = await Promise.all(promises);
+      
+      let fetchedFiles = rootData.success ? rootData.files : [];
+      results.forEach(res => {
+        if (res.success && res.files) fetchedFiles = [...fetchedFiles, ...res.files];
+      });
+      
+      setFiles(prev => {
+        const nextFiles = new Map(prev.map(f => [f._id, f]));
+        const syncedParentIds = new Set([null, ...Array.from(foldersToFetch)]);
+        
+        Array.from(nextFiles.values()).forEach(f => {
+          if (syncedParentIds.has(f.parentFolder)) {
+            nextFiles.delete(f._id);
+          }
+        });
+        
+        fetchedFiles.forEach((f: FileItem) => nextFiles.set(f._id, f));
+        return Array.from(nextFiles.values());
+      });
+      
     } catch (err) {
-      console.error('Failed to fetch files for editor', err);
+      console.error('Failed to sync file system', err);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [expandedFolders, rootFolderId, openFiles]);
 
   useEffect(() => {
-    fetchFiles();
+    syncFileSystem();
 
-    // Listen for file system updates
     const handleUpdate = () => {
-      fetchFiles();
+      syncFileSystem();
     };
     window.addEventListener('nebula_fs_update', handleUpdate);
     return () => window.removeEventListener('nebula_fs_update', handleUpdate);
-  }, [fetchFiles]);
+  }, [syncFileSystem]);
 
   // Sync open files with backend data (in case a file is deleted or renamed externally)
   useEffect(() => {

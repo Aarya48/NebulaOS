@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import GalaxyPage from './pages/galaxy';
 import AuthPage from './pages/auth';
 import OSPage from './pages/os';
+import DocsPage from './pages/docs';
 import { CursorProvider, Cursor, CursorFollow } from '@/components/animate-ui/components/animate/cursor';
 import { MultiplayerCursors } from '@/components/MultiplayerCursors';
 import { SettingsProvider, useSettings } from '@/lib/SettingsContext';
@@ -27,6 +28,7 @@ function InnerApp() {
           <Route path="/" element={<GalaxyPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/os" element={<OSPage />} />
+          <Route path="/docs" element={<DocsPage />} />
         </Routes>
       </Router>
     </CursorProvider>

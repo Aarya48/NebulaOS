@@ -19,9 +19,20 @@ export default function GalaxyPage() {
         </div>
 
         <div className="hidden md:flex items-center space-x-12">
-          <a href="#" className="text-sm font-medium text-gray-400 hover:text-white transition-colors tracking-widest uppercase">Features</a>
-          <a href="#" className="text-sm font-medium text-gray-400 hover:text-white transition-colors tracking-widest uppercase">Docs</a>
-          <a href="#" className="text-sm font-medium text-gray-400 hover:text-white transition-colors tracking-widest uppercase">Community</a>
+          <a 
+            href="#features" 
+            onClick={(e) => { e.preventDefault(); document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }); }}
+            className="text-sm font-medium text-gray-400 hover:text-white transition-colors tracking-widest uppercase"
+          >
+            Features
+          </a>
+          <a 
+            href="#" 
+            onClick={(e) => { e.preventDefault(); navigate('/docs'); }} 
+            className="text-sm font-medium text-gray-400 hover:text-white transition-colors tracking-widest uppercase"
+          >
+            Docs
+          </a>
         </div>
 
         <div className="flex items-center">
@@ -65,12 +76,14 @@ export default function GalaxyPage() {
                   Initiate
                 </LiquidButton>
               </div>
-              <LiquidButton
-                size="lg"
-                className="w-64 h-16 text-sm tracking-[0.2em] uppercase font-bold rounded-none border border-fuchsia-500/30 [--liquid-button-background-color:transparent] [--liquid-button-color:rgba(217,70,239,0.2)] text-fuchsia-300/80 hover:text-white hover:border-fuchsia-500/80 shadow-[0_0_15px_rgba(217,70,239,0.1)] hover:shadow-[0_0_30px_rgba(217,70,239,0.4)] transition-all"
-              >
-                Documentation
-              </LiquidButton>
+              <div onClick={() => navigate('/docs')}>
+                <LiquidButton
+                  size="lg"
+                  className="w-64 h-16 text-sm tracking-[0.2em] uppercase font-bold rounded-none border border-fuchsia-500/30 [--liquid-button-background-color:transparent] [--liquid-button-color:rgba(217,70,239,0.2)] text-fuchsia-300/80 hover:text-white hover:border-fuchsia-500/80 shadow-[0_0_15px_rgba(217,70,239,0.1)] hover:shadow-[0_0_30px_rgba(217,70,239,0.4)] transition-all"
+                >
+                  Documentation
+                </LiquidButton>
+              </div>
             </div>
           </div>
 
@@ -100,7 +113,7 @@ export default function GalaxyPage() {
           </div>
 
           {/* Visual Showcase Section - Framed as Screenshot Windows */}
-          <div className="w-full pb-48 flex flex-col items-center justify-start shrink-0">
+          <div id="features" className="w-full pb-48 flex flex-col items-center justify-start shrink-0">
             <h2 className="text-3xl md:text-5xl font-light text-white uppercase tracking-widest mb-16 self-start pl-8 border-l-2 border-cyan-500">
               Platform Interface
             </h2>
@@ -114,7 +127,7 @@ export default function GalaxyPage() {
                   <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                   <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                 </div>
-                <div className="absolute top-10 inset-x-0 bottom-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out group-hover:scale-[1.02]" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1200')" }}></div>
+                <div className="absolute top-10 inset-x-0 bottom-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out group-hover:scale-[1.02]" style={{ backgroundImage: "url('/Screenshot 2026-06-09 113210.png')" }}></div>
                 <div className="absolute top-10 inset-x-0 bottom-0 bg-gradient-to-t from-[#0a0514] via-[#0a0514]/20 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-700"></div>
                 <div className="absolute bottom-10 left-10 right-10 z-30">
                   <h3 className="text-3xl font-bold text-white tracking-widest uppercase mb-2 drop-shadow-lg">Dashboard View</h3>
@@ -129,7 +142,7 @@ export default function GalaxyPage() {
                   <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                   <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                 </div>
-                <div className="absolute top-10 inset-x-0 bottom-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out group-hover:scale-[1.02]" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000')" }}></div>
+                <div className="absolute top-10 inset-x-0 bottom-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out group-hover:scale-[1.02]" style={{ backgroundImage: "url('/Screenshot 2026-06-09 113308.png')" }}></div>
                 <div className="absolute top-10 inset-x-0 bottom-0 bg-gradient-to-t from-[#0a0514] via-[#0a0514]/20 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-700"></div>
                 <div className="absolute bottom-8 left-8 right-8 z-30">
                   <h3 className="text-2xl font-bold text-white tracking-widest uppercase mb-2 drop-shadow-lg">File System</h3>
@@ -144,7 +157,7 @@ export default function GalaxyPage() {
                   <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                   <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                 </div>
-                <div className="absolute top-10 inset-x-0 bottom-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out group-hover:scale-[1.02]" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1000')" }}></div>
+                <div className="absolute top-10 inset-x-0 bottom-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out group-hover:scale-[1.02]" style={{ backgroundImage: "url('/Screenshot 2026-06-09 113231.png')" }}></div>
                 <div className="absolute top-10 inset-x-0 bottom-0 bg-gradient-to-t from-[#0a0514] via-[#0a0514]/20 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-700"></div>
                 <div className="absolute bottom-8 left-8 right-8 z-30">
                   <h3 className="text-2xl font-bold text-white tracking-widest uppercase mb-2 drop-shadow-lg">Terminal Mode</h3>
@@ -159,7 +172,7 @@ export default function GalaxyPage() {
                   <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
                   <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
                 </div>
-                <div className="absolute top-10 inset-x-0 bottom-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out group-hover:scale-[1.02]" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1464802686167-b939a6910659?q=80&w=1200')" }}></div>
+                <div className="absolute top-10 inset-x-0 bottom-0 bg-cover bg-center transition-transform duration-[2000ms] ease-out group-hover:scale-[1.02]" style={{ backgroundImage: "url('/Screenshot 2026-06-09 113426.png')" }}></div>
                 <div className="absolute top-10 inset-x-0 bottom-0 bg-gradient-to-t from-[#0a0514] via-[#0a0514]/20 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-700"></div>
                 <div className="absolute bottom-10 left-10 right-10 z-30">
                   <h3 className="text-3xl font-bold text-white tracking-widest uppercase mb-2 drop-shadow-lg">System Monitor</h3>
@@ -189,9 +202,14 @@ export default function GalaxyPage() {
               </p>
               
               <div className="pt-8 flex justify-center relative z-10">
-                <button className="px-8 py-3 rounded-none border border-white/20 text-white text-xs font-semibold tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300">
+                <a 
+                  href="https://github.com/Aarya48/NebulaOS"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-8 py-3 rounded-none border border-white/20 text-white text-xs font-semibold tracking-widest uppercase hover:bg-white hover:text-black transition-all duration-300"
+                >
                   View Repo
-                </button>
+                </a>
               </div>
             </div>
           </div>

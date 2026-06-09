@@ -127,6 +127,13 @@ export function CodeEditorApp() {
 
   useEffect(() => {
     fetchFiles();
+
+    // Listen for file system updates
+    const handleUpdate = () => {
+      fetchFiles();
+    };
+    window.addEventListener('nebula_fs_update', handleUpdate);
+    return () => window.removeEventListener('nebula_fs_update', handleUpdate);
   }, [fetchFiles]);
 
   // Sync open files with backend data (in case a file is deleted or renamed externally)

@@ -4,7 +4,6 @@ import AuthPage from './pages/auth';
 import OSPage from './pages/os';
 import DocsPage from './pages/docs';
 import { CursorProvider, Cursor, CursorFollow } from '@/components/animate-ui/components/animate/cursor';
-import { MultiplayerCursors } from '@/components/MultiplayerCursors';
 import { SettingsProvider, useSettings } from '@/lib/SettingsContext';
 import './App.css';
 
@@ -22,7 +21,6 @@ function InnerApp() {
       <CursorFollow className="bg-[#0a0514]/80 text-fuchsia-400 border border-fuchsia-500/30 backdrop-blur-md px-3 py-1 font-mono text-[10px] uppercase tracking-[0.2em] shadow-[0_0_10px_rgba(217,70,239,0.2)]">
         ME
       </CursorFollow>
-      <MultiplayerCursors />
       <Router>
         <Routes>
           <Route path="/" element={<GalaxyPage />} />

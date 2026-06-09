@@ -4,10 +4,13 @@ import { cn } from '@/lib/utils';
 import { Layout, Cpu, FolderTree, Terminal } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+import { MultiplayerCursors } from '@/components/MultiplayerCursors';
+
 export default function GalaxyPage() {
   const navigate = useNavigate();
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'relative', margin: '0 auto', overflow: 'hidden' }}>
+      <MultiplayerCursors />
 
       {/* Top Navbar */}
       <nav className="absolute top-0 inset-x-0 h-20 z-50 flex items-center justify-between px-8 lg:px-16 bg-[#05010A]/50 backdrop-blur-lg border-b border-white/5">

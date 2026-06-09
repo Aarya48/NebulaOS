@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { motion, AnimatePresence, type Transition } from 'motion/react';
 import { ContextMenu } from '@base-ui-components/react/context-menu';
 import { cn } from '@/lib/utils';

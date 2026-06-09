@@ -220,11 +220,34 @@ export function CodeEditorApp() {
     return () => window.removeEventListener('nebula_open_editor', handleOpenEditor);
   }, [files, openFiles, editorContents, expandedFolders]);
 
+  const fetchFolderContents = async (folderId: string) => {
+    try {
+      const token = localStorage.getItem('nebula_token');
+      const response = await fetch(`${API_BASE_URL}/api/files/folder/${folderId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      if (data.success && data.files) {
+        setFiles(prev => {
+          const newMap = new Map(prev.map(f => [f._id, f]));
+          data.files.forEach((f: FileItem) => newMap.set(f._id, f));
+          return Array.from(newMap.values());
+        });
+      }
+    } catch (err) {
+      console.error('Failed to fetch folder contents', err);
+    }
+  };
+
   const toggleFolder = (id: string) => {
     setExpandedFolders(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+        fetchFolderContents(id);
+      }
       return next;
     });
   };
@@ -374,7 +397,11 @@ export function CodeEditorApp() {
               {files.filter(f => f.type === 'folder').map(folder => (
                 <button 
                   key={folder._id} 
-                  onClick={() => { setRootFolderId(folder._id); setIsSelectingRoot(false); }}
+                  onClick={() => { 
+                    setRootFolderId(folder._id); 
+                    setIsSelectingRoot(false);
+                    fetchFolderContents(folder._id);
+                  }}
                   className="w-full text-left px-2 py-1.5 text-xs text-gray-400 hover:text-white hover:bg-white/5 rounded truncate flex items-center"
                 >
                   <Folder className="w-3 h-3 mr-2 opacity-50" /> {folder.name}

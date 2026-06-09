@@ -295,7 +295,8 @@ export function CodeEditorApp() {
       if (data.success) {
         // Optimistically update the files array so the dot turns green immediately
         setFiles(prev => prev.map(f => f._id === activeFileId ? { ...f, content: activeContent } : f));
-        window.dispatchEvent(new CustomEvent('nebula_fs_update'));
+        // We do NOT dispatch nebula_fs_update here because saving content
+        // doesn't affect FileExplorer or Desktop, and it prevents race conditions.
       }
     } catch (err) {
       console.error('Failed to save file', err);
